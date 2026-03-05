@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Project_5010.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,18">
+            <TextBlock Text="Overview" FontSize="34" FontWeight="Bold"/>
+            <TextBlock Text="Track your fitness journey and metrics." Foreground="{StaticResource MutedTextBrush}" FontSize="14"/>
+        </StackPanel>
+
+        <!-- Cards -->
+        <UniformGrid Grid.Row="1" Columns="4" Margin="0,10,0,22">
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
+                <StackPanel>
+                    <TextBlock Text="Total Workouts" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBlock x:Name="TotalWorkoutsText" Text="0" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="WorkoutsWeekText" Text="+0 this week" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
+                <StackPanel>
+                    <TextBlock Text="Total Duration" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBlock x:Name="TotalDurationText" Text="0m" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
+                    <TextBlock x:Name="DurationWeekText" Text="0m this week" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
+                <StackPanel>
+                    <TextBlock Text="Calories Burned" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBlock x:Name="CaloriesText" Text="—" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
+                    <TextBlock Text="(Add later)" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel>
+                    <TextBlock Text="Active Days" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBlock x:Name="ActiveDaysText" Text="0" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
+                    <TextBlock Text="Consistency is key" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Placeholder for charts -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
+                <StackPanel>
+                    <TextBlock Text="Activity (Last 7 Days)" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <TextBlock Text="Chart placeholder (we’ll add real charts next)" Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
+                <StackPanel>
+                    <TextBlock Text="Workout Types" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                    <TextBlock Text="Chart placeholder" Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

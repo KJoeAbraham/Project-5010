@@ -1,45 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using Project_5010.Models;
+using Project_5010.Services;
+using Project_5010.Views;
 
 namespace Project_5010
 {
     public partial class MainWindow : Window
     {
-        private readonly List<Workout> workouts = new();
+        private readonly WorkoutFileService workoutFileService;
+        private readonly ObservableCollection<Workout> workouts;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            workoutFileService = new WorkoutFileService();
+            workouts = new ObservableCollection<Workout>(workoutFileService.LoadWorkouts());
+
+            // Default page
+            MainContent.Content = new DashboardView(workouts);
         }
 
-        private void SaveWorkoutButton_Click(object sender, RoutedEventArgs e)
+        private void Dashboard_Click(object sender, RoutedEventArgs e)
         {
-            if (!int.TryParse(DurationTextBox.Text, out int duration) || duration <= 0)
-            {
-                StatusTextBlock.Text = "Please enter a valid duration.";
-                return;
-            }
+            MainContent.Content = new DashboardView(workouts);
+        }
 
-            ComboBoxItem selectedItem = (ComboBoxItem)WorkoutTypeCombo.SelectedItem;
-            string workoutType = selectedItem.Content?.ToString() ?? "";
+        private void Workouts_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new WorkoutsView(workouts, workoutFileService);
+        }
 
-            Workout workout = new Workout
-            {
-                Type = workoutType,
-                Date = System.DateTime.Now,
-                DurationMinutes = duration,
-                Notes = NotesTextBox.Text
-            };
+        private void Library_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new LibraryView();
+        }
 
-            workouts.Add(workout);
-
-            StatusTextBlock.Text = $"Workout saved! Total workouts: {workouts.Count}";
-
-            DurationTextBox.Clear();
-            NotesTextBox.Clear();
-            WorkoutTypeCombo.SelectedIndex = 0;
+        private void Settings_Click(object sender, RoutedEventArgs e)
+        {
+            MainContent.Content = new SettingsView();
         }
     }
 }

@@ -1,63 +1,42 @@
 ﻿<Window x:Class="Project_5010.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Project_5010"
-        mc:Ignorable="d"
-        Title="Fitness Tracker" Height="450" Width="500">
+        Title="Momentum" Height="720" Width="1200"
+        WindowStartupLocation="CenterScreen">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="240"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0"
-                   Text="Log Workout"
-                   FontSize="24"
-                   FontWeight="Bold"
-                   Margin="0,0,0,20"/>
+        <!-- Sidebar -->
+        <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush1}" BorderThickness="0,0,1,0">
+            <StackPanel Margin="16">
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,10">
-            <TextBlock Text="Workout Type"/>
-            <ComboBox x:Name="WorkoutTypeCombo" Width="200" SelectedIndex="0">
-                <ComboBoxItem Content="Cardio"/>
-                <ComboBoxItem Content="Strength"/>
-                <ComboBoxItem Content="Flexibility"/>
-            </ComboBox>
-        </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="6,8,6,18">
+                    <Border Width="34" Height="34" CornerRadius="10" Background="#1A2433" Margin="0,0,10,0">
+                        <TextBlock Text="M" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="16"/>
+                    </Border>
+                    <TextBlock Text="Momentum" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+                </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,10">
-            <TextBlock Text="Duration (minutes)"/>
-            <TextBox x:Name="DurationTextBox" Width="200"/>
-        </StackPanel>
+                <TextBlock Text="OVERVIEW" Foreground="{StaticResource MutedTextBrush}" Margin="8,8,0,10" FontSize="12"/>
 
-        <StackPanel Grid.Row="3" Margin="0,0,0,10">
-            <TextBlock Text="Notes"/>
-            <TextBox x:Name="NotesTextBox"
-                     Width="300"
-                     Height="80"
-                     TextWrapping="Wrap"
-                     AcceptsReturn="True"/>
-        </StackPanel>
+                <Button Style="{StaticResource SidebarButtonStyle}" Content="Dashboard" Click="Dashboard_Click"/>
+                <Button Style="{StaticResource SidebarButtonStyle}" Content="Workouts" Click="Workouts_Click"/>
+                <Button Style="{StaticResource SidebarButtonStyle}" Content="Library" Click="Library_Click"/>
+                <Button Style="{StaticResource SidebarButtonStyle}" Content="Settings" Click="Settings_Click"/>
 
-        <Button Grid.Row="4"
-                x:Name="SaveWorkoutButton"
-                Content="Save Workout"
-                Width="140"
-                Height="35"
-                Margin="0,10,0,10"
-                Click="SaveWorkoutButton_Click"/>
+                <StackPanel VerticalAlignment="Bottom" Margin="0,30,0,0">
+                    <TextBlock Text="v0.1" Foreground="{StaticResource MutedTextBrush}" Margin="8,12,0,0"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
 
-        <TextBlock Grid.Row="5"
-                   x:Name="StatusTextBlock"
-                   Foreground="Green"
-                   FontWeight="SemiBold"
-                   Margin="0,10,0,0"/>
+        <!-- Main content -->
+        <Grid Grid.Column="1" Margin="24">
+            <ContentControl x:Name="MainContent"/>
+        </Grid>
     </Grid>
 </Window>
