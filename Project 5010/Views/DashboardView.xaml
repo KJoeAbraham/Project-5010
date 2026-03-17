@@ -1,74 +1,224 @@
 ﻿<UserControl x:Class="Project_5010.Views.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F5F6FA">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E8EAF3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="24"/>
+            <Setter Property="Padding" Value="22"/>
+            <Setter Property="Margin" Value="0,0,16,16"/>
+        </Style>
 
-        <StackPanel Margin="0,0,0,18">
-            <TextBlock Text="Overview" FontSize="34" FontWeight="Bold"/>
-            <TextBlock Text="Track your fitness journey and metrics." Foreground="{StaticResource MutedTextBrush}" FontSize="14"/>
+        <Style x:Key="MetricLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#727990"/>
+        </Style>
+
+        <Style x:Key="MetricValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#202637"/>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="18,4,2,8">
+            <StackPanel Margin="2,2,0,20">
+                <TextBlock x:Name="WelcomeText"
+                           Text="Welcome back"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="#1D2435"/>
+                <TextBlock Text="A quick look at how your week is moving."
+                           Margin="0,6,0,0"
+                           FontSize="14"
+                           Foreground="#727990"/>
+            </StackPanel>
+
+            <UniformGrid Columns="4" Margin="0,0,0,6">
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Total workouts" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="TotalWorkoutsText" Text="0" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                        <TextBlock Text="All logged sessions" Margin="0,8,0,0" FontSize="12" Foreground="#959CB0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Total training time" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="TotalMinutesText" Text="0m" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                        <TextBlock Text="Across your full history" Margin="0,8,0,0" FontSize="12" Foreground="#959CB0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Workouts this week" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="ThisWeekText" Text="0" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                        <TextBlock Text="Since the start of this week" Margin="0,8,0,0" FontSize="12" Foreground="#959CB0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Active days" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="ActiveDaysText" Text="0" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                        <TextBlock Text="Distinct days trained this week" Margin="0,8,0,0" FontSize="12" Foreground="#959CB0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Activity last 7 days"
+                                           FontSize="22"
+                                           FontWeight="SemiBold"
+                                           Foreground="#1D2435"/>
+                                <TextBlock Text="Minutes trained per day"
+                                           Margin="0,4,0,0"
+                                           FontSize="13"
+                                           Foreground="#727990"/>
+                            </StackPanel>
+                            <Border Grid.Column="1"
+                                    Padding="12,8"
+                                    Background="#F3F0FF"
+                                    CornerRadius="14">
+                                <TextBlock x:Name="WeeklyMinutesText"
+                                           Text="0 min this week"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="#6D4AFF"/>
+                            </Border>
+                        </Grid>
+
+                        <Border Background="#FBFBFE" BorderBrush="#EFF1F6" BorderThickness="1" CornerRadius="20" Padding="18">
+                            <ItemsControl x:Name="ActivityItemsControl">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="7"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Height="250" VerticalAlignment="Bottom" Margin="6,0">
+                                            <TextBlock Text="{Binding MinutesLabel}"
+                                                       HorizontalAlignment="Center"
+                                                       FontSize="12"
+                                                       Foreground="#8B91A4"
+                                                       Margin="0,0,0,8"/>
+                                            <Border Width="34"
+                                                    Height="{Binding BarHeight}"
+                                                    Background="#6D4AFF"
+                                                    CornerRadius="16"
+                                                    VerticalAlignment="Bottom"
+                                                    HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding DayLabel}"
+                                                       HorizontalAlignment="Center"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#3A4158"
+                                                       Margin="0,12,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Type breakdown"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Foreground="#1D2435"/>
+                        <TextBlock Text="Share of all workouts by type"
+                                   Margin="0,4,0,18"
+                                   FontSize="13"
+                                   Foreground="#727990"/>
+
+                        <ItemsControl x:Name="TypeBreakdownItemsControl">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,0,0,18">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="{Binding TypeName}"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#2A3044"/>
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                                <TextBlock Text="{Binding Count}"
+                                                           FontSize="13"
+                                                           FontWeight="SemiBold"
+                                                           Foreground="#2A3044"/>
+                                                <TextBlock Text=" workouts"
+                                                           FontSize="13"
+                                                           Foreground="#8B91A4"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Text="{Binding PercentageLabel}"
+                                                   Margin="0,4,0,8"
+                                                   FontSize="12"
+                                                   Foreground="#8B91A4"/>
+                                        <Border Height="10" Background="#EEF0F6" CornerRadius="5">
+                                            <Grid HorizontalAlignment="Left">
+                                                <Border Width="{Binding BarWidth}"
+                                                        Height="10"
+                                                        Background="#6D4AFF"
+                                                        CornerRadius="5"/>
+                                            </Grid>
+                                        </Border>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <UniformGrid Columns="3">
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Average session" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="AverageSessionText" Text="0m" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Favorite type" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="FavoriteTypeText" Text="—" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="Best day this week" Style="{StaticResource MetricLabelStyle}"/>
+                        <TextBlock x:Name="BestDayText" Text="—" Style="{StaticResource MetricValueStyle}" Margin="0,10,0,0"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
         </StackPanel>
-
-        <!-- Cards -->
-        <UniformGrid Grid.Row="1" Columns="4" Margin="0,10,0,22">
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
-                <StackPanel>
-                    <TextBlock Text="Total Workouts" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBlock x:Name="TotalWorkoutsText" Text="0" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
-                    <TextBlock x:Name="WorkoutsWeekText" Text="+0 this week" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
-                <StackPanel>
-                    <TextBlock Text="Total Duration" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBlock x:Name="TotalDurationText" Text="0m" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
-                    <TextBlock x:Name="DurationWeekText" Text="0m this week" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
-                <StackPanel>
-                    <TextBlock Text="Calories Burned" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBlock x:Name="CaloriesText" Text="—" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
-                    <TextBlock Text="(Add later)" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
-                </StackPanel>
-            </Border>
-
-            <Border Style="{StaticResource CardBorderStyle}">
-                <StackPanel>
-                    <TextBlock Text="Active Days" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBlock x:Name="ActiveDaysText" Text="0" FontSize="30" FontWeight="Bold" Margin="0,12,0,0"/>
-                    <TextBlock Text="Consistency is key" Foreground="{StaticResource MutedTextBrush}" Margin="0,6,0,0"/>
-                </StackPanel>
-            </Border>
-        </UniformGrid>
-
-        <!-- Placeholder for charts -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
-                <StackPanel>
-                    <TextBlock Text="Activity (Last 7 Days)" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                    <TextBlock Text="Chart placeholder (we’ll add real charts next)" Foreground="{StaticResource MutedTextBrush}"/>
-                </StackPanel>
-            </Border>
-
-            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
-                <StackPanel>
-                    <TextBlock Text="Workout Types" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
-                    <TextBlock Text="Chart placeholder" Foreground="{StaticResource MutedTextBrush}"/>
-                </StackPanel>
-            </Border>
-        </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

@@ -1,83 +1,265 @@
 ﻿<UserControl x:Class="Project_5010.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="#F5F6FA">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E8EAF3"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="24"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="Margin" Value="0,0,16,16"/>
+        </Style>
 
-        <StackPanel Margin="0,0,0,18">
-            <TextBlock Text="Settings" FontSize="34" FontWeight="Bold"/>
-            <TextBlock Text="Profile info and training split."
-                       Foreground="{StaticResource MutedTextBrush}"
-                       FontSize="14"/>
-        </StackPanel>
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#2B3145"/>
+        </Style>
 
-        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Width="700" HorizontalAlignment="Left">
-            <StackPanel>
+        <Style x:Key="InputStyle" TargetType="TextBox">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#333A50"/>
+            <Setter Property="Background" Value="#FBFBFE"/>
+            <Setter Property="BorderBrush" Value="#E6E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="16">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-                <TextBlock Text="Profile" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+        <Style x:Key="SplitRadioStyle" TargetType="RadioButton">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Root"
+                                Background="#FBFBFE"
+                                BorderBrush="#E6E8F0"
+                                BorderThickness="1"
+                                CornerRadius="18"
+                                Padding="18">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{TemplateBinding Content}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="#23293B"/>
+                                    <TextBlock Text="{TemplateBinding Tag}"
+                                               Margin="0,6,0,0"
+                                               FontSize="12"
+                                               Foreground="#737A91"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                                <Border Grid.Column="1"
+                                        Width="22"
+                                        Height="22"
+                                        CornerRadius="11"
+                                        Background="White"
+                                        BorderBrush="#C8CCDB"
+                                        BorderThickness="1.5"
+                                        VerticalAlignment="Top">
+                                    <Ellipse x:Name="Dot"
+                                             Width="10"
+                                             Height="10"
+                                             Fill="#6D4AFF"
+                                             Visibility="Collapsed"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#F1EDFF"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="#6D4AFF"/>
+                                <Setter TargetName="Dot" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="Background" Value="#6D4AFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
 
-                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
-                        <TextBlock Text="Display Name" Foreground="{StaticResource MutedTextBrush}"/>
-                        <TextBox x:Name="NameTextBox" Margin="0,6,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,0,12">
-                        <TextBlock Text="Age" Foreground="{StaticResource MutedTextBrush}"/>
-                        <TextBox x:Name="AgeTextBox" Margin="0,6,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,12">
-                        <TextBlock Text="Height (cm)" Foreground="{StaticResource MutedTextBrush}"/>
-                        <TextBox x:Name="HeightTextBox" Margin="0,6,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,12">
-                        <TextBlock Text="Weight (kg)" Foreground="{StaticResource MutedTextBrush}"/>
-                        <TextBox x:Name="WeightTextBox" Margin="0,6,0,0"/>
-                    </StackPanel>
-
-                    <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                        <TextBlock Text="Training Split" Foreground="{StaticResource MutedTextBrush}"/>
-                        <ComboBox x:Name="SplitCombo" Margin="0,6,0,0" SelectedIndex="0">
-                            <ComboBoxItem Content="PPL"/>
-                            <ComboBoxItem Content="UpperLower"/>
-                            <ComboBoxItem Content="FullBody"/>
-                            <ComboBoxItem Content="Bro"/>
-                        </ComboBox>
-                    </StackPanel>
-                </Grid>
-
-                <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                    <Button Content="Save Settings"
-                            Height="36"
-                            Padding="14,0"
-                            Background="{StaticResource AccentBrush}"
-                            Foreground="Black"
-                            BorderThickness="0"
-                            Cursor="Hand"
-                            Click="SaveButton_Click"/>
-
-                    <TextBlock x:Name="StatusTextBlock"
-                               Margin="12,8,0,0"
-                               Foreground="{StaticResource MutedTextBrush}"/>
-                </StackPanel>
-
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="18,4,2,8">
+            <StackPanel Margin="2,2,0,20">
+                <TextBlock Text="Personalize Momentum"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="#1D2435"/>
+                <TextBlock Text="Your name, body stats, and split are saved locally and loaded on startup."
+                           Margin="0,6,0,0"
+                           FontSize="14"
+                           Foreground="#727990"/>
             </StackPanel>
-        </Border>
-    </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.1*"/>
+                    <ColumnDefinition Width="1.1*"/>
+                    <ColumnDefinition Width="0.9*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Profile"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Foreground="#1D2435"/>
+                        <TextBlock Text="Basic identity and body metrics used throughout the app."
+                                   Margin="0,4,0,20"
+                                   FontSize="13"
+                                   Foreground="#727990"/>
+
+                        <TextBlock Text="Display name" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="DisplayNameTextBox" Style="{StaticResource InputStyle}" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Height (cm)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="HeightTextBox" Style="{StaticResource InputStyle}" Margin="0,0,0,18"/>
+
+                        <TextBlock Text="Weight (kg)" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="WeightTextBox" Style="{StaticResource InputStyle}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Style="{StaticResource CardStyle}">
+                    <StackPanel>
+                        <TextBlock Text="Training split"
+                                   FontSize="22"
+                                   FontWeight="SemiBold"
+                                   Foreground="#1D2435"/>
+                        <TextBlock Text="This selection can drive your Library tabs and appears in the shell header."
+                                   Margin="0,4,0,20"
+                                   FontSize="13"
+                                   Foreground="#727990"/>
+
+                        <RadioButton x:Name="PplRadioButton"
+                                     GroupName="SplitGroup"
+                                     Style="{StaticResource SplitRadioStyle}"
+                                     Content="PPL"
+                                     Tag="Push / Pull / Legs with focused gym-day categories."
+                                     Checked="SplitRadioButton_Checked"/>
+
+                        <RadioButton x:Name="UpperLowerRadioButton"
+                                     GroupName="SplitGroup"
+                                     Style="{StaticResource SplitRadioStyle}"
+                                     Content="Upper / Lower"
+                                     Tag="Alternating upper-body and lower-body training days."
+                                     Checked="SplitRadioButton_Checked"/>
+
+                        <RadioButton x:Name="FullBodyRadioButton"
+                                     GroupName="SplitGroup"
+                                     Style="{StaticResource SplitRadioStyle}"
+                                     Content="Full Body"
+                                     Tag="A compact split for fewer weekly sessions."
+                                     Checked="SplitRadioButton_Checked"/>
+
+                        <RadioButton x:Name="BroSplitRadioButton"
+                                     GroupName="SplitGroup"
+                                     Style="{StaticResource SplitRadioStyle}"
+                                     Content="Bro Split"
+                                     Tag="Single muscle group emphasis across dedicated days."
+                                     Checked="SplitRadioButton_Checked"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="2">
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <TextBlock Text="Live preview"
+                                       FontSize="22"
+                                       FontWeight="SemiBold"
+                                       Foreground="#1D2435"/>
+                            <TextBlock Text="This is how the shell header will read after saving."
+                                       Margin="0,4,0,18"
+                                       FontSize="13"
+                                       Foreground="#727990"/>
+
+                            <Border Background="#F8F6FF" BorderBrush="#E3DBFF" BorderThickness="1" CornerRadius="18" Padding="16">
+                                <StackPanel>
+                                    <TextBlock x:Name="PreviewNameText"
+                                               Text="Athlete"
+                                               FontSize="18"
+                                               FontWeight="SemiBold"
+                                               Foreground="#2A3044"/>
+                                    <TextBlock x:Name="PreviewSplitText"
+                                               Text="PPL split"
+                                               Margin="0,6,0,0"
+                                               FontSize="13"
+                                               Foreground="#6D4AFF"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Library effect"
+                                       Margin="0,18,0,6"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#2A3044"/>
+                            <TextBlock x:Name="LibraryEffectText"
+                                       Text="Push / Pull / Legs tabs"
+                                       FontSize="13"
+                                       Foreground="#727990"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,16">
+                        <StackPanel>
+                            <Button Content="Save settings"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Click="SaveButton_Click"/>
+                            <TextBlock x:Name="StatusTextBlock"
+                                       Text=""
+                                       Margin="0,12,0,0"
+                                       FontSize="13"
+                                       Foreground="#727990"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>
