@@ -1,0 +1,175 @@
+﻿<UserControl x:Class="Project_5010.Views.LibraryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="64*"/>
+            <RowDefinition Height="91*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,18">
+            <TextBlock Text="Library" FontSize="34" FontWeight="Bold"/>
+            <TextBlock Text="Explore exercises and track your PRs."
+                       Foreground="{StaticResource MutedTextBrush}"
+                       FontSize="14"/>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Grid.RowSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left: Exercise Library -->
+            <Border Grid.Column="0"
+                    Style="{StaticResource CardBorderStyle}"
+                    Margin="0,0,14,0">
+                <StackPanel>
+
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Search box -->
+                        <TextBox x:Name="SearchTextBox"
+                                 Height="34"
+                                 VerticalContentAlignment="Center"
+                                 Margin="0,0,12,0"
+                                 TextChanged="SearchTextBox_TextChanged"/>
+
+                        <!-- Filter tabs -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button x:Name="AllTab"
+                                    Content="All"
+                                    Margin="0,0,8,0"
+                                    Click="Tab_Click"/>
+
+                            <Button x:Name="Tab1"
+                                    Content="Push"
+                                    Margin="0,0,8,0"
+                                    Click="Tab_Click"/>
+
+                            <Button x:Name="Tab2"
+                                    Content="Pull"
+                                    Margin="0,0,8,0"
+                                    Click="Tab_Click"/>
+
+                            <Button x:Name="Tab3"
+                                    Content="Legs"
+                                    Margin="0,0,8,0"
+                                    Click="Tab_Click"/>
+
+                            <Button x:Name="CardioTab"
+                                    Content="Cardio"
+                                    Click="Tab_Click"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <ListView x:Name="ExercisesListView"
+                              Height="520"
+                              SelectionChanged="ExercisesListView_SelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Exercise"
+                                                Width="220"
+                                                DisplayMemberBinding="{Binding Name}"/>
+                                <GridViewColumn Header="Category"
+                                                Width="110"
+                                                DisplayMemberBinding="{Binding Category}"/>
+                                <GridViewColumn Header="Muscle"
+                                                Width="140"
+                                                DisplayMemberBinding="{Binding Muscle}"/>
+                                <GridViewColumn Header="Equipment"
+                                                Width="140"
+                                                DisplayMemberBinding="{Binding Equipment}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </StackPanel>
+            </Border>
+
+            <!-- Right: PR Panel -->
+            <Border Grid.Column="1"
+                    Style="{StaticResource CardBorderStyle}">
+                <StackPanel>
+
+                    <TextBlock Text="Personal Records"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Margin="0,0,0,12"/>
+
+                    <ListView x:Name="PRListView"
+                              Height="260"
+                              SelectionChanged="PRListView_SelectionChanged">
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Exercise"
+                                                Width="160"
+                                                DisplayMemberBinding="{Binding ExerciseName}"/>
+                                <GridViewColumn Header="Weight"
+                                                Width="90"
+                                                DisplayMemberBinding="{Binding Weight}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                    <TextBlock Text="Add / Edit PR"
+                               FontWeight="SemiBold"
+                               Margin="0,14,0,8"/>
+
+                    <TextBlock Text="Exercise"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="PRExerciseTextBox"
+                             Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Weight (kg)"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="PRWeightTextBox"
+                             Margin="0,6,0,10"/>
+
+                    <TextBlock Text="Notes"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="PRNotesTextBox"
+                             Height="60"
+                             Margin="0,6,0,10"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="SavePRButton"
+                                Content="Save PR"
+                                Height="34"
+                                Padding="12,0"
+                                Background="{StaticResource AccentBrush}"
+                                Foreground="Black"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Click="SavePRButton_Click"/>
+
+                        <Button x:Name="DeletePRButton"
+                                Content="Delete"
+                                Height="34"
+                                Margin="10,0,0,0"
+                                Padding="12,0"
+                                Background="#2A1A1A"
+                                Foreground="{StaticResource TextBrush}"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Visibility="Collapsed"
+                                Click="DeletePRButton_Click"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="PRStatusText"
+                               Margin="0,10,0,0"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

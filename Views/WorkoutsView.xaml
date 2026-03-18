@@ -1,0 +1,233 @@
+﻿<UserControl x:Class="Project_5010.Views.WorkoutsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,0,0,18">
+            <TextBlock Text="Workouts" FontSize="34" FontWeight="Bold"/>
+            <TextBlock Text="Log training, edit entries, and review your history."
+                       Foreground="{StaticResource MutedTextBrush}"
+                       FontSize="14"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,14">
+            <DockPanel>
+                <TextBlock Text="Weekly Summary"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock x:Name="WeeklySummaryTextBlock"
+                           DockPanel.Dock="Right"
+                           FontSize="16"
+                           FontWeight="SemiBold"
+                           Foreground="{StaticResource AccentBrush}"
+                           VerticalAlignment="Center"
+                           Text="0 workouts · 0 kcal this week"/>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.15*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
+                <StackPanel>
+                    <TextBlock Text="Log / Edit Workout" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Workout Type" Foreground="{StaticResource MutedTextBrush}"/>
+                    <ComboBox x:Name="WorkoutTypeCombo"
+                              Margin="0,6,0,12"
+                              SelectionChanged="WorkoutTypeCombo_SelectionChanged">
+                        <ComboBoxItem Content="Cardio"/>
+                        <ComboBoxItem Content="Strength"/>
+                        <ComboBoxItem Content="HIIT"/>
+                        <ComboBoxItem Content="Flexibility"/>
+                    </ComboBox>
+
+                    <TextBlock Text="Title" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="TitleTextBox" Margin="0,6,0,12"/>
+
+                    <TextBlock Text="Date" Foreground="{StaticResource MutedTextBrush}"/>
+                    <DatePicker x:Name="WorkoutDatePicker" Margin="0,6,0,12"/>
+
+                    <TextBlock Text="Time (HH:mm)" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="WorkoutTimeTextBox" Margin="0,6,0,4"/>
+                    <TextBlock x:Name="TimeErrorTextBlock"
+                               Foreground="#FF6B6B"
+                               FontSize="12"
+                               Margin="0,0,0,8"/>
+
+                    <TextBlock Text="Duration (minutes)" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="DurationTextBox"
+                             Margin="0,6,0,4"
+                             TextChanged="DurationTextBox_TextChanged"/>
+                    <TextBlock x:Name="DurationErrorTextBlock"
+                               Foreground="#FF6B6B"
+                               FontSize="12"
+                               Margin="0,0,0,8"/>
+
+                    <TextBlock Text="Calories" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="CaloriesTextBox"
+                             Margin="0,6,0,12"
+                             IsReadOnly="True"/>
+
+                    <TextBlock Text="Notes" Foreground="{StaticResource MutedTextBrush}"/>
+                    <TextBox x:Name="NotesTextBox"
+                             Height="90"
+                             Margin="0,6,0,12"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"/>
+
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="SaveOrUpdateButton"
+                                Content="Save Workout"
+                                Height="36"
+                                Padding="14,0"
+                                Background="{StaticResource AccentBrush}"
+                                Foreground="Black"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Click="SaveOrUpdateButton_Click"/>
+
+                        <Button x:Name="ClearButton"
+                                Content="Clear"
+                                Height="36"
+                                Margin="10,0,0,0"
+                                Padding="14,0"
+                                Background="#1A2433"
+                                Foreground="{StaticResource TextBrush}"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Click="ClearButton_Click"/>
+
+                        <Button x:Name="DeleteButton"
+                                Content="Delete"
+                                Height="36"
+                                Margin="10,0,0,0"
+                                Padding="14,0"
+                                Background="#2A1A1A"
+                                Foreground="{StaticResource TextBrush}"
+                                BorderThickness="0"
+                                Cursor="Hand"
+                                Visibility="Collapsed"
+                                Click="DeleteButton_Click"/>
+                    </StackPanel>
+
+                    <TextBlock x:Name="StatusTextBlock"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource MutedTextBrush}"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DockPanel Grid.Row="0" Margin="0,0,0,12">
+                        <TextBlock Text="History"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+
+                        <TextBlock x:Name="WorkoutCountTextBlock"
+                                   DockPanel.Dock="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource MutedTextBrush}"
+                                   Text="0 workouts"/>
+                    </DockPanel>
+
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+                        <Button Content="All" Width="76" Margin="0,0,8,0" Click="FilterAll_Click"/>
+                        <Button Content="Cardio" Width="76" Margin="0,0,8,0" Click="FilterCardio_Click"/>
+                        <Button Content="Strength" Width="76" Margin="0,0,8,0" Click="FilterStrength_Click"/>
+                        <Button Content="HIIT" Width="76" Margin="0,0,8,0" Click="FilterHIIT_Click"/>
+                        <Button Content="Flexibility" Width="88" Click="FilterFlexibility_Click"/>
+                    </StackPanel>
+
+                    <ListView x:Name="HistoryListView"
+                              Grid.Row="2"
+                              SelectionChanged="HistoryListView_SelectionChanged"
+                              BorderThickness="0"
+                              Background="Transparent">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,10"
+                                        Padding="12"
+                                        Background="#0F1722"
+                                        BorderBrush="#1F2A3A"
+                                        BorderThickness="1"
+                                        CornerRadius="10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="44"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <Border Width="34"
+                                                Height="34"
+                                                CornerRadius="17"
+                                                Background="#1A2433"
+                                                VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding Icon}"
+                                                       FontSize="16"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+                                        </Border>
+
+                                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                                            <TextBlock Text="{Binding Title}"
+                                                       FontWeight="SemiBold"
+                                                       FontSize="15"/>
+                                            <TextBlock Text="{Binding Type}"
+                                                       Foreground="{StaticResource MutedTextBrush}"
+                                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding DisplayDateTime}"
+                                                       Foreground="{StaticResource MutedTextBrush}"
+                                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding DurationDisplay}"
+                                                       Foreground="{StaticResource MutedTextBrush}"
+                                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="{Binding Notes}"
+                                                       TextWrapping="Wrap"
+                                                       Margin="0,4,0,0"/>
+                                        </StackPanel>
+
+                                        <Border Grid.Column="2"
+                                                Background="#1B3A28"
+                                                Padding="10,4"
+                                                CornerRadius="12"
+                                                VerticalAlignment="Top">
+                                            <TextBlock Text="{Binding CaloriesDisplay}"
+                                                       FontWeight="SemiBold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <TextBlock Grid.Row="3"
+                               Text="Tip: Click an item to edit or delete it."
+                               Foreground="{StaticResource MutedTextBrush}"
+                               Margin="0,10,0,0"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>
