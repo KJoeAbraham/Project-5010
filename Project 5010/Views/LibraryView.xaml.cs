@@ -1,4 +1,4 @@
-﻿using Project_5010.Models;
+using Project_5010.Models;
 using Project_5010.Services;
 using System;
 using System.Collections.ObjectModel;
@@ -22,6 +22,7 @@ namespace Project_5010.Views
 
         private PersonalRecord? selectedPR;
         private UserSettings? currentSettings;
+        private string? selectedExerciseName;
 
         // Default constructor
         public LibraryView()
@@ -34,14 +35,14 @@ namespace Project_5010.Views
             ExercisesListView.ItemsSource = exercises;
             PRListView.ItemsSource = prs;
 
-            PRDatePicker.SelectedDate = DateTime.Now; // Safe default date
+            PRDatePicker.SelectedDate = DateTime.Now;
 
             currentSettings = SafeLoadSettings();
             ApplyExerciseFilter();
             RefreshSuggestions();
         }
 
-        // Reflection constructor required for MainWindow Routing
+        // Reflection constructor required for MainWindow routing
         public LibraryView(UserSettings settings, SettingsFileService settingsSvc, object? workoutsSource, object? workoutFileService)
         {
             InitializeComponent();
@@ -56,14 +57,14 @@ namespace Project_5010.Views
             ExercisesListView.ItemsSource = exercises;
             PRListView.ItemsSource = prs;
 
-            PRDatePicker.SelectedDate = DateTime.Now; // Safe default date
+            PRDatePicker.SelectedDate = DateTime.Now;
 
             currentSettings = settings;
             ApplyExerciseFilter();
             RefreshSuggestions();
         }
 
-        // Methods for MainWindow Routing Updates
+        // Methods for MainWindow routing updates
         public void ApplyUserSettings(UserSettings settings)
         {
             currentSettings = settings;
@@ -83,28 +84,22 @@ namespace Project_5010.Views
         // ========== EXERCISE FILTERING ==========
 
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e) => ApplyExerciseFilter();
-        private void FilterCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) => ApplyExerciseFilter();
 
         private void ApplyExerciseFilter()
         {
             if (ExercisesListView == null || ExercisesListView.ItemsSource == null) return;
 
             string q = (SearchTextBox?.Text ?? "").Trim().ToLowerInvariant();
-            string categoryText = (CategoryFilterCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "All";
 
             ICollectionView view = CollectionViewSource.GetDefaultView(ExercisesListView.ItemsSource);
             view.Filter = obj =>
             {
                 if (obj is not Exercise ex) return false;
 
-                bool matchesSearch = string.IsNullOrWhiteSpace(q) ||
-                                     ex.Name.ToLowerInvariant().Contains(q) ||
-                                     ex.Muscle.ToLowerInvariant().Contains(q) ||
-                                     ex.Equipment.ToLowerInvariant().Contains(q);
-
-                bool matchesCategory = categoryText == "All" || ex.Category.Equals(categoryText, StringComparison.OrdinalIgnoreCase);
-
-                return matchesSearch && matchesCategory;
+                return string.IsNullOrWhiteSpace(q) ||
+                       ex.Name.ToLowerInvariant().Contains(q) ||
+                       ex.Muscle.ToLowerInvariant().Contains(q) ||
+                       ex.Equipment.ToLowerInvariant().Contains(q);
             };
             view.Refresh();
         }
@@ -113,12 +108,20 @@ namespace Project_5010.Views
         {
             if (ExercisesListView.SelectedItem is Exercise ex)
             {
-                PRExerciseTextBox.Text = ex.Name;
-                ApplyPrFilter(); // Filter PRs by selected exercise
+                selectedExerciseName = ex.Name;
+                DetailNameText.Text = ex.Name;
+                DetailEquipText.Text = "Equipment: " + ex.Equipment;
+                DetailPrimaryText.Text = "Primary: " + ex.Muscle;
+                DetailSecondaryText.Text = "Secondary: " + (string.IsNullOrWhiteSpace(ex.SubMuscle) ? "—" : ex.SubMuscle);
+                ApplyPrFilter();
             }
             else
             {
-                PRExerciseTextBox.Text = "Select an exercise from the left...";
+                selectedExerciseName = null;
+                DetailNameText.Text = "Select an exercise...";
+                DetailEquipText.Text = "Equipment: —";
+                DetailPrimaryText.Text = "Primary: —";
+                DetailSecondaryText.Text = "Secondary: —";
                 ApplyPrFilter();
             }
         }
@@ -130,9 +133,8 @@ namespace Project_5010.Views
             if (PRListView.SelectedItem is PersonalRecord pr)
             {
                 selectedPR = pr;
-                PRExerciseTextBox.Text = pr.ExerciseName;
                 PRWeightTextBox.Text = pr.Weight.ToString();
-                PRNotesTextBox.Text = pr.Notes;
+                PRRepsTextBox.Text = pr.Reps.ToString();
                 PRDatePicker.SelectedDate = pr.Date;
 
                 SavePRButton.Content = "Update Record";
@@ -143,38 +145,37 @@ namespace Project_5010.Views
 
         private void SavePRButton_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(PRExerciseTextBox.Text) || PRExerciseTextBox.Text.Contains("Select"))
+            if (string.IsNullOrWhiteSpace(selectedExerciseName))
             {
                 SetStatus("Please select an exercise first.", Colors.IndianRed);
                 return;
             }
 
-            if (!double.TryParse(PRWeightTextBox.Text, out double weight) || weight <= 0)
+            if (!double.TryParse(PRWeightTextBox.Text, out double weight) || weight < 0)
             {
-                SetStatus("Enter a valid positive weight.", Colors.IndianRed);
+                SetStatus("Enter a valid weight.", Colors.IndianRed);
                 return;
             }
 
+            int.TryParse(PRRepsTextBox.Text, out int reps);
             DateTime date = PRDatePicker.SelectedDate ?? DateTime.Now;
-            string notes = PRNotesTextBox.Text;
 
             if (selectedPR == null)
             {
                 prs.Add(new PersonalRecord
                 {
-                    ExerciseName = PRExerciseTextBox.Text.Trim(),
+                    ExerciseName = selectedExerciseName,
                     Weight = weight,
-                    Date = date,
-                    Notes = notes
+                    Reps = reps,
+                    Date = date
                 });
                 SetStatus("New PR Added to Trophy Room!", Colors.LimeGreen);
             }
             else
             {
-                selectedPR.ExerciseName = PRExerciseTextBox.Text.Trim();
                 selectedPR.Weight = weight;
+                selectedPR.Reps = reps;
                 selectedPR.Date = date;
-                selectedPR.Notes = notes;
                 PRListView.Items.Refresh();
                 SetStatus("PR Updated!", Colors.LimeGreen);
             }
@@ -189,7 +190,7 @@ namespace Project_5010.Views
             if (selectedPR == null) return;
             prs.Remove(selectedPR);
             prService.Save(prs.ToList());
-            
+
             SetStatus("PR Deleted.", Colors.IndianRed);
             ClearPRForm();
             ApplyPrFilter();
@@ -199,9 +200,9 @@ namespace Project_5010.Views
         {
             selectedPR = null;
             PRWeightTextBox.Text = "";
-            PRNotesTextBox.Text = "";
+            PRRepsTextBox.Text = "";
             PRDatePicker.SelectedDate = DateTime.Now;
-            SavePRButton.Content = "Log Personal Record";
+            SavePRButton.Content = "Log PR";
             DeletePRButton.Visibility = Visibility.Collapsed;
         }
 
@@ -209,13 +210,13 @@ namespace Project_5010.Views
         {
             if (PRListView == null || PRListView.ItemsSource == null) return;
 
-            string exName = PRExerciseTextBox.Text?.Trim() ?? "";
+            string exName = selectedExerciseName ?? "";
 
             ICollectionView view = CollectionViewSource.GetDefaultView(PRListView.ItemsSource);
             view.Filter = obj =>
             {
                 if (obj is not PersonalRecord pr) return false;
-                if (string.IsNullOrWhiteSpace(exName) || exName.Contains("Select")) return true;
+                if (string.IsNullOrWhiteSpace(exName)) return true;
                 return string.Equals(pr.ExerciseName, exName, StringComparison.OrdinalIgnoreCase);
             };
             view.Refresh();
@@ -225,6 +226,69 @@ namespace Project_5010.Views
         {
             PRStatusText.Text = message;
             PRStatusText.Foreground = new SolidColorBrush(color);
+        }
+
+        // ========== CUSTOM EXERCISE ==========
+
+        private void CustomExercise_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            TrackerPanel.Visibility = Visibility.Collapsed;
+            CustomExercisePanel.Visibility = Visibility.Visible;
+            CustomNameBox.Text = "";
+            CustomTypeCombo.SelectedIndex = 0;
+            CustomEquipCombo.SelectedIndex = 0;
+            CustomPrimaryCombo.SelectedIndex = 0;
+            CustomSecondaryList.SelectedItems.Clear();
+            CustomFormErrorText.Text = "";
+        }
+
+        private void CancelCustom_Click(object sender, RoutedEventArgs e)
+        {
+            CustomExercisePanel.Visibility = Visibility.Collapsed;
+            TrackerPanel.Visibility = Visibility.Visible;
+        }
+
+        private void SaveCustom_Click(object sender, RoutedEventArgs e)
+        {
+            string name = CustomNameBox.Text.Trim();
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                CustomFormErrorText.Text = "Exercise name is required.";
+                return;
+            }
+
+            string equipment = (CustomEquipCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "None";
+            string primary = (CustomPrimaryCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Other";
+            string secondary = string.Join(", ", CustomSecondaryList.SelectedItems
+                .Cast<ListBoxItem>()
+                .Select(i => i.Content?.ToString() ?? ""));
+
+            string category = primary switch
+            {
+                "Chest" or "Shoulders" or "Triceps" => "Push",
+                "Back" or "Biceps" => "Pull",
+                "Legs" => "Legs",
+                "Cardio" => "Cardio",
+                _ => "Push"
+            };
+
+            string exerciseType = (CustomTypeCombo.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Weight & Reps";
+
+            exercises.Add(new Exercise
+            {
+                Name = name,
+                Category = category,
+                Muscle = primary,
+                Equipment = equipment,
+                ExerciseType = exerciseType,
+                SecondaryMuscles = secondary,
+                SubMuscle = secondary
+            });
+
+            exerciseService.Save(exercises.ToList());
+
+            CustomExercisePanel.Visibility = Visibility.Collapsed;
+            TrackerPanel.Visibility = Visibility.Visible;
         }
 
         // ========== DAILY SUGGESTIONS ==========
