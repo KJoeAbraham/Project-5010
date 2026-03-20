@@ -90,7 +90,7 @@ namespace Project_5010.Views
             if (ExercisesListView == null || ExercisesListView.ItemsSource == null) return;
 
             string q = (SearchTextBox?.Text ?? "").Trim().ToLowerInvariant();
-            string categoryText = ((ComboBoxItem)CategoryFilterCombo?.SelectedItem)?.Content?.ToString() ?? "All";
+            string categoryText = (CategoryFilterCombo?.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "All";
 
             ICollectionView view = CollectionViewSource.GetDefaultView(ExercisesListView.ItemsSource);
             view.Filter = obj =>
