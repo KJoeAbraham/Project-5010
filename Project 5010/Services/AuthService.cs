@@ -157,10 +157,9 @@ namespace Project_5010.Services
 
             if (!File.Exists(_usersFilePath))
             {
-                SaveUsers(new List<UserAccount>());
+                File.WriteAllText(_usersFilePath, "[]");
             }
         }
-
         private List<UserAccount> LoadUsers()
         {
             try
