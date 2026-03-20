@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -16,8 +17,8 @@ namespace Project_5010
     {
         private readonly SettingsFileService _settingsService;
         private UserSettings _settings;
-        private readonly object? _workoutFileService;
-        private readonly object? _workoutsSource;
+        private readonly WorkoutFileService _workoutFileService;
+        private readonly ObservableCollection<Workout> _workouts;
 
         private DashboardView? _dashboardView;
         private UserControl? _workoutsView;
@@ -41,8 +42,8 @@ namespace Project_5010
                 _settingsService.Save(_settings);
             }
 
-            _workoutFileService = CreateInstanceByShortName("WorkoutFileService");
-            _workoutsSource = LoadWorkoutsSourceSafely();
+            _workoutFileService = new WorkoutFileService();
+            _workouts = new ObservableCollection<Workout>(_workoutFileService.LoadWorkouts());
 
             UpdateHeader();
             NavigateDashboard();
@@ -57,15 +58,7 @@ namespace Project_5010
         {
             if (_workoutsView == null)
             {
-                _workoutsView = TryCreateExternalView(
-                    "WorkoutsView",
-                    _workoutsSource,
-                    _workoutFileService,
-                    _settings,
-                    _settingsService)
-                    ?? BuildPlaceholderView(
-                        "WorkoutsView not found",
-                        "Your existing WorkoutsView was not found with a matching constructor. The shell still works. If you want, send me your current WorkoutsView.xaml.cs and I will wire it exactly.");
+                _workoutsView = new WorkoutsView(_workouts, _workoutFileService);
             }
 
             ShowView(
@@ -83,7 +76,7 @@ namespace Project_5010
                     "LibraryView",
                     _settings,
                     _settingsService,
-                    _workoutsSource,
+                    _workouts,
                     _workoutFileService)
                     ?? BuildPlaceholderView(
                         "LibraryView not found",
@@ -120,7 +113,7 @@ namespace Project_5010
         {
             if (_dashboardView == null)
             {
-                _dashboardView = new DashboardView(_workoutsSource, _settings);
+                _dashboardView = new DashboardView(_workouts, _settings);
             }
             else
             {
@@ -200,53 +193,6 @@ namespace Project_5010
             InvokeIfPresent(view, "ConfigureTabsForSplit", _settings.SplitPlanId);
             InvokeIfPresent(view, "ApplySplitSelection", _settings.SplitPlanId);
             InvokeIfPresent(view, "RefreshForSettings", _settings);
-        }
-
-        private object? LoadWorkoutsSourceSafely()
-        {
-            if (_workoutFileService == null)
-            {
-                return null;
-            }
-
-            string[] methodNames = { "LoadWorkouts", "Load" };
-
-            foreach (string methodName in methodNames)
-            {
-                MethodInfo? method = _workoutFileService.GetType().GetMethod(methodName, Type.EmptyTypes);
-                if (method == null)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    return method.Invoke(_workoutFileService, null);
-                }
-                catch
-                {
-                }
-            }
-
-            return null;
-        }
-
-        private static object? CreateInstanceByShortName(string shortTypeName)
-        {
-            Type? foundType = FindTypeByShortName(shortTypeName);
-            if (foundType == null)
-            {
-                return null;
-            }
-
-            try
-            {
-                return Activator.CreateInstance(foundType);
-            }
-            catch
-            {
-                return null;
-            }
         }
 
         private static UserControl? TryCreateExternalView(string shortTypeName, params object?[] preferredArguments)
