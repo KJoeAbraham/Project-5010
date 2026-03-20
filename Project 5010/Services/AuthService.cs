@@ -180,7 +180,7 @@ namespace Project_5010.Services
 
         private void SaveUsers(List<UserAccount> users)
         {
-            EnsureStorageExists();
+            Directory.CreateDirectory(_dataFolder);
 
             string json = JsonSerializer.Serialize(users, _jsonOptions);
             File.WriteAllText(_usersFilePath, json);

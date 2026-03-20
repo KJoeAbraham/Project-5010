@@ -15,6 +15,7 @@ namespace Project_5010
 {
     public partial class MainWindow : Window
     {
+        private readonly string _username;
         private readonly SettingsFileService _settingsService;
         private UserSettings _settings;
         private readonly WorkoutFileService _workoutFileService;
@@ -25,28 +26,50 @@ namespace Project_5010
         private UserControl? _libraryView;
         private SettingsView? _settingsView;
 
+        private static readonly string[] DailyJokes =
+        {
+            "Rest day. Even champions need a Sunday. Your gains aren't going anywhere. 😴",   // Sun
+            "New week, new PRs. Mondays hit different when you actually show up. 💪",          // Mon
+            "Two days in. The people who quit? They're watching Netflix. You're here. 🔥",     // Tue
+            "Midweek grind. The bar doesn't care what day it is — neither should you. 😤",     // Wed
+            "Thursday. The unsung hero of the gym week. Almost there, don't fold. 🏋️",        // Thu
+            "Friday lifts hit different. End the week the same way you started: strong. 🎯",   // Fri
+            "Saturday gainz. The gym is half empty. The weights are full of potential. 🚀",    // Sat
+        };
+
         public MainWindow() : this(null)
         {
         }
 
-        public MainWindow(string? displayName)
+        public MainWindow(string? username)
         {
             InitializeComponent();
 
-            _settingsService = new SettingsFileService();
-            _settings = _settingsService.Load();
+            _username = string.IsNullOrWhiteSpace(username) ? "default" : username.Trim();
 
-            if (!string.IsNullOrWhiteSpace(displayName))
+            _settingsService = new SettingsFileService();
+            _settings = _settingsService.Load(_username);
+
+            // Set display name to username on first login if still default
+            if (_settings.DisplayName == "Athlete" || string.IsNullOrWhiteSpace(_settings.DisplayName))
             {
-                _settings.DisplayName = displayName.Trim();
-                _settingsService.Save(_settings);
+                _settings.DisplayName = _username;
+                _settingsService.Save(_settings, _username);
             }
 
-            _workoutFileService = new WorkoutFileService();
+            _workoutFileService = new WorkoutFileService(_username);
             _workouts = new ObservableCollection<Workout>(_workoutFileService.LoadWorkouts());
 
             UpdateHeader();
+            ShellJokeText.Text = DailyJokes[(int)DateTime.Today.DayOfWeek];
             NavigateDashboard();
+        }
+
+        private void Logout()
+        {
+            var loginWindow = new LoginWindow();
+            loginWindow.Show();
+            Close();
         }
 
         private void DashboardNavButton_Click(object sender, RoutedEventArgs e)
@@ -96,8 +119,9 @@ namespace Project_5010
         {
             if (_settingsView == null)
             {
-                _settingsView = new SettingsView(_settingsService);
+                _settingsView = new SettingsView(_settingsService, _username);
                 _settingsView.SettingsSaved += SettingsView_SettingsSaved;
+                _settingsView.LogoutRequested += Logout;
             }
 
             _settingsView.ReloadFromService();

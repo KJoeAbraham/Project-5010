@@ -258,6 +258,42 @@
                                        TextWrapping="Wrap"/>
                         </StackPanel>
                     </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Account"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#1D2435"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Signing out returns you to the login screen. Your data stays saved."
+                                       FontSize="12"
+                                       Foreground="#727990"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,14"/>
+                            <Button Content="Log Out"
+                                    Height="44"
+                                    Background="#FEF2F2"
+                                    Foreground="#DC2626"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    BorderThickness="1"
+                                    BorderBrush="#FECACA"
+                                    Cursor="Hand"
+                                    Click="LogoutButton_Click">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="14">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Grid>
         </StackPanel>

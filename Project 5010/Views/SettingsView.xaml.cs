@@ -10,21 +10,24 @@ namespace Project_5010.Views
     public partial class SettingsView : UserControl
     {
         private readonly SettingsFileService _settingsService;
+        private readonly string _username;
         private UserSettings _settings;
 
         public event Action<UserSettings>? SettingsSaved;
+        public event Action? LogoutRequested;
 
-        public SettingsView(SettingsFileService settingsService)
+        public SettingsView(SettingsFileService settingsService, string username = "default")
         {
             InitializeComponent();
             _settingsService = settingsService;
+            _username = username;
             _settings = new UserSettings();
             ReloadFromService();
         }
 
         public void ReloadFromService()
         {
-            _settings = _settingsService.Load();
+            _settings = _settingsService.Load(_username);
             LoadIntoUi();
             UpdatePreview();
             StatusTextBlock.Text = string.Empty;
@@ -77,7 +80,7 @@ namespace Project_5010.Views
             _settings.WeightKg = weightKg;
             _settings.SplitPlanId = GetSelectedSplitId();
 
-            _settingsService.Save(_settings);
+            _settingsService.Save(_settings, _username);
 
             StatusTextBlock.Text = (heightValid && weightValid)
                 ? "Settings saved successfully."
@@ -160,6 +163,11 @@ namespace Project_5010.Views
                 default:
                     return "PPL";
             }
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            LogoutRequested?.Invoke();
         }
 
         private static string ToPrettySplit(string splitId)

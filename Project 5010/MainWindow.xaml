@@ -214,11 +214,11 @@
                         BorderThickness="1"
                         CornerRadius="18">
                     <StackPanel>
-                        <TextBlock Text="Momentum shell"
+                        <TextBlock Text="💪 Daily Momentum"
                                    FontSize="14"
                                    FontWeight="SemiBold"
                                    Foreground="#23283A"/>
-                        <TextBlock Text="Settings update the header and can push split changes into LibraryView."
+                        <TextBlock x:Name="ShellJokeText"
                                    TextWrapping="Wrap"
                                    Margin="0,6,0,0"
                                    FontSize="12"

@@ -1,127 +1,232 @@
-﻿<UserControl x:Class="Project_5010.Views.WorkoutsView"
+<UserControl x:Class="Project_5010.Views.WorkoutsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:models="clr-namespace:Project_5010.Models"
+             Background="Transparent">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <!-- Override global near-white foreground so ComboBox/DatePicker dropdowns are readable -->
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+        </Style>
+    </UserControl.Resources>
 
-        <!-- Page header -->
-        <StackPanel Margin="0,0,0,18">
-            <TextBlock Text="Workouts" FontSize="34" FontWeight="Bold"/>
-            <TextBlock Text="Log training, edit entries, and review your history."
-                       Foreground="{StaticResource MutedTextBrush}"
-                       FontSize="14"/>
-        </StackPanel>
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="340"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1.15*"/>
-                <ColumnDefinition Width="2*"/>
-            </Grid.ColumnDefinitions>
+        <!-- ========== LEFT: History Panel ========== -->
+        <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E5E7EB" BorderThickness="1"
+                CornerRadius="12" Padding="12" Margin="0,0,16,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!-- Left: Log/Edit workout -->
-            <Border Grid.Column="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,14,0">
-                <StackPanel>
-                    <TextBlock Text="Log / Edit Workout" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <!-- Title -->
+                <TextBlock Grid.Row="0" Text="Workouts" FontSize="20" FontWeight="Bold"
+                           Foreground="#111827" Margin="0,0,0,12"/>
 
-                    <TextBlock Text="Workout Type" Foreground="{StaticResource MutedTextBrush}"/>
-                    <ComboBox x:Name="WorkoutTypeCombo" SelectedIndex="0" Margin="0,6,0,12">
-                        <ComboBoxItem Content="Cardio"/>
-                        <ComboBoxItem Content="Strength"/>
-                        <ComboBoxItem Content="Flexibility"/>
-                    </ComboBox>
-
-                    <TextBlock Text="Date" Foreground="{StaticResource MutedTextBrush}"/>
-                    <DatePicker x:Name="WorkoutDatePicker" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Time (HH:mm)" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBox x:Name="WorkoutTimeTextBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Duration (minutes)" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBox x:Name="DurationTextBox" Margin="0,6,0,12"/>
-
-                    <TextBlock Text="Notes" Foreground="{StaticResource MutedTextBrush}"/>
-                    <TextBox x:Name="NotesTextBox"
-                             Height="90"
-                             Margin="0,6,0,12"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"/>
-
-                    <StackPanel Orientation="Horizontal">
-                        <Button x:Name="SaveOrUpdateButton"
-                                Content="Save Workout"
-                                Height="36"
-                                Padding="14,0"
-                                Background="{StaticResource AccentBrush}"
-                                Foreground="Black"
-                                BorderThickness="0"
-                                Cursor="Hand"
-                                Click="SaveOrUpdateButton_Click"/>
-
-                        <Button x:Name="ClearButton"
-                                Content="Clear"
-                                Height="36"
-                                Margin="10,0,0,0"
-                                Padding="14,0"
-                                Background="#1A2433"
-                                Foreground="{StaticResource TextBrush}"
-                                BorderThickness="0"
-                                Cursor="Hand"
-                                Click="ClearButton_Click"/>
-
-                        <Button x:Name="DeleteButton"
-                                Content="Delete"
-                                Height="36"
-                                Margin="10,0,0,0"
-                                Padding="14,0"
-                                Background="#2A1A1A"
-                                Foreground="{StaticResource TextBrush}"
-                                BorderThickness="0"
-                                Cursor="Hand"
-                                Visibility="Collapsed"
-                                Click="DeleteButton_Click"/>
+                <!-- Weekly Summary Card -->
+                <Border Grid.Row="1" Background="#F5F3FF" BorderBrush="#6D4AFF" BorderThickness="1"
+                        CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                    <StackPanel>
+                        <TextBlock Text="This Week" FontWeight="Bold" Foreground="#6D4AFF" Margin="0,0,0,6"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock x:Name="WeekSessionsText" Text="0 sessions"
+                                           Foreground="#111827" FontWeight="SemiBold" FontSize="14"/>
+                                <TextBlock x:Name="WeekMinutesText" Text="0 min total"
+                                           Foreground="#6B7280" FontSize="11" Margin="0,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock x:Name="WeekBreakdownText" Text=""
+                                           Foreground="#6B7280" FontSize="11" TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
+                </Border>
 
-                    <TextBlock x:Name="StatusTextBlock"
-                               Margin="0,12,0,0"
-                               Foreground="{StaticResource MutedTextBrush}"/>
+                <!-- Type Filter Buttons -->
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
+                    <Button x:Name="FilterAllBtn" Content="All" Tag="All" Click="FilterType_Click"
+                            Background="#6D4AFF" Foreground="White" FontSize="12" FontWeight="SemiBold"
+                            Padding="10,4" Margin="0,0,6,0" BorderThickness="0" Cursor="Hand"/>
+                    <Button x:Name="FilterCardioBtn" Content="Cardio" Tag="Cardio" Click="FilterType_Click"
+                            Background="#F3F4F6" Foreground="#6B7280" FontSize="12" FontWeight="SemiBold"
+                            Padding="10,4" Margin="0,0,6,0" BorderThickness="0" Cursor="Hand"/>
+                    <Button x:Name="FilterStrengthBtn" Content="Strength" Tag="Strength" Click="FilterType_Click"
+                            Background="#F3F4F6" Foreground="#6B7280" FontSize="12" FontWeight="SemiBold"
+                            Padding="10,4" Margin="0,0,6,0" BorderThickness="0" Cursor="Hand"/>
+                    <Button x:Name="FilterFlexBtn" Content="Flex" Tag="Flexibility" Click="FilterType_Click"
+                            Background="#F3F4F6" Foreground="#6B7280" FontSize="12" FontWeight="SemiBold"
+                            Padding="10,4" BorderThickness="0" Cursor="Hand"/>
                 </StackPanel>
-            </Border>
 
-            <!-- Right: History -->
-            <Border Grid.Column="1" Style="{StaticResource CardBorderStyle}">
-                <StackPanel>
-                    <TextBlock Text="History" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,12"/>
+                <!-- Workout List -->
+                <ListBox x:Name="HistoryListView" Grid.Row="3"
+                         SelectionChanged="HistoryListView_SelectionChanged"
+                         Background="Transparent" BorderThickness="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,2"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Grid Cursor="Hand" Background="Transparent">
+                                            <Border x:Name="HoverOverlay" Background="#F5F3FF"
+                                                    CornerRadius="6" Opacity="0"/>
+                                            <Border x:Name="SelectedOverlay" Background="#EDE9FE"
+                                                    CornerRadius="6" Opacity="0"/>
+                                            <Border Padding="10,8">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="HoverOverlay" Property="Opacity" Value="1"/>
+                                            </Trigger>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="SelectedOverlay" Property="Opacity" Value="1"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:Workout}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Type}" FontWeight="SemiBold"
+                                               FontSize="14" Foreground="#111827"/>
+                                    <TextBlock Text="{Binding Date, StringFormat={}{0:MMM dd, yyyy · HH:mm}}"
+                                               Foreground="#6B7280" FontSize="11" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding DurationMinutes, StringFormat={}{0} min}"
+                                           Foreground="#6D4AFF" FontSize="12" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Grid>
+        </Border>
 
-                    <ListView x:Name="HistoryListView"
-                              Height="520"
-                              SelectionChanged="HistoryListView_SelectionChanged">
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Date"
-                                                Width="170"
-                                                DisplayMemberBinding="{Binding Date}"/>
-                                <GridViewColumn Header="Type"
-                                                Width="110"
-                                                DisplayMemberBinding="{Binding Type}"/>
-                                <GridViewColumn Header="Duration"
-                                                Width="90"
-                                                DisplayMemberBinding="{Binding DurationMinutes}"/>
-                                <GridViewColumn Header="Notes"
-                                                Width="240"
-                                                DisplayMemberBinding="{Binding Notes}"/>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
+        <!-- ========== RIGHT: Log / Edit Form ========== -->
+        <Border Grid.Column="1" Background="#FFFFFF" BorderBrush="#E5E7EB" BorderThickness="1"
+                CornerRadius="12" Padding="24" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock x:Name="FormTitleText" Text="Log Workout" FontSize="20"
+                           FontWeight="Bold" Foreground="#111827" Margin="0,0,0,4"/>
+                <TextBlock Text="Fill in the details below to record your session."
+                           Foreground="#6B7280" FontSize="13" Margin="0,0,0,24"/>
 
-                    <TextBlock Text="Tip: Click an item to edit or delete it."
-                               Foreground="{StaticResource MutedTextBrush}"
-                               Margin="0,10,0,0"/>
+                <!-- Type + Date -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Workout Type" Foreground="#6B7280" FontSize="12" Margin="0,0,0,4"/>
+                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                                CornerRadius="6" Height="36">
+                            <ComboBox x:Name="WorkoutTypeCombo" SelectedIndex="0"
+                                      Background="Transparent" Foreground="#111827" BorderThickness="0"
+                                      FontSize="13" Padding="8,0" VerticalContentAlignment="Center">
+                                <ComboBoxItem Content="Cardio"/>
+                                <ComboBoxItem Content="Strength"/>
+                                <ComboBoxItem Content="Flexibility"/>
+                            </ComboBox>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Date" Foreground="#6B7280" FontSize="12" Margin="0,0,0,4"/>
+                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                                CornerRadius="6" Height="36">
+                            <DatePicker x:Name="WorkoutDatePicker" Background="Transparent"
+                                        Foreground="#111827" BorderThickness="0"
+                                        VerticalContentAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Time + Duration -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Time (HH:mm)" Foreground="#6B7280" FontSize="12" Margin="0,0,0,4"/>
+                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                                CornerRadius="6" Height="36">
+                            <TextBox x:Name="WorkoutTimeTextBox" Background="Transparent"
+                                     Foreground="#111827" BorderThickness="0"
+                                     Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Duration (minutes)" Foreground="#6B7280" FontSize="12" Margin="0,0,0,4"/>
+                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                                CornerRadius="6" Height="36">
+                            <TextBox x:Name="DurationTextBox" Background="Transparent"
+                                     Foreground="#111827" BorderThickness="0"
+                                     Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+
+                <!-- Notes -->
+                <TextBlock Text="Notes" Foreground="#6B7280" FontSize="12" Margin="0,0,0,4"/>
+                <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                        CornerRadius="6" Margin="0,0,0,24">
+                    <TextBox x:Name="NotesTextBox" Height="90" Background="Transparent"
+                             Foreground="#111827" BorderThickness="0" Padding="10,8"
+                             AcceptsReturn="True" TextWrapping="Wrap" FontSize="13"/>
+                </Border>
+
+                <!-- Buttons + Status -->
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="StatusTextBlock" VerticalAlignment="Center"
+                               Margin="0,0,16,0" FontSize="12" FontWeight="SemiBold" Foreground="#6B7280"/>
+                    <Button x:Name="DeleteButton" Content="Delete"
+                            Background="#EF4444" Foreground="White" FontWeight="SemiBold"
+                            FontSize="13" Padding="14,8" Margin="0,0,8,0" BorderThickness="0"
+                            Cursor="Hand" Visibility="Collapsed" Click="DeleteButton_Click"/>
+                    <Button x:Name="ClearButton" Content="Clear"
+                            Background="#F3F4F6" Foreground="#6B7280" FontWeight="SemiBold"
+                            FontSize="13" Padding="14,8" Margin="0,0,8,0" BorderThickness="0"
+                            Cursor="Hand" Click="ClearButton_Click"/>
+                    <Button x:Name="SaveOrUpdateButton" Content="Save Workout"
+                            Background="#6D4AFF" Foreground="White" FontWeight="SemiBold"
+                            FontSize="13" Padding="20,8" BorderThickness="0"
+                            Cursor="Hand" Click="SaveOrUpdateButton_Click"/>
                 </StackPanel>
-            </Border>
-        </Grid>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
