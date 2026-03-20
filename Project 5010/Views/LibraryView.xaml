@@ -4,75 +4,90 @@
              xmlns:models="clr-namespace:Project_5010.Models"
              Background="Transparent">
 
-    <Grid Margin="12">
+    <Grid Margin="15">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="360"/> <ColumnDefinition Width="*"/>   </Grid.ColumnDefinitions>
+            <ColumnDefinition Width="6*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#1E2435" CornerRadius="12" Padding="12" Margin="0,0,16,0">
+        <Border Grid.Column="0" Background="#1C1C1E" CornerRadius="20" Padding="24" Margin="0,0,24,0">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0" Margin="0,0,0,12">
-                    <TextBlock Text="Library" FontSize="20" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
-                    <TextBlock Text="+ Custom Exercise" Foreground="#9D84FF" FontSize="13" FontWeight="SemiBold" 
-                               HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand" MouseLeftButtonDown="CustomExercise_Click"/>
-                </Grid>
+                <TextBlock Grid.Row="0" Text="MOMENTUM LIBRARY" FontSize="13" FontWeight="Bold" Foreground="#6D4AFF" Margin="0,0,0,2"/>
+                <TextBlock Grid.Row="1" Text="Exercises" FontSize="36" FontWeight="Black" Foreground="White" Margin="0,0,0,16"/>
 
-                <Border Grid.Row="1" Background="#2A3044" BorderBrush="#6D4AFF" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,0,0,12">
+                <Border Grid.Row="2" Background="#2C2C2E" BorderBrush="#6D4AFF" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,20">
                     <StackPanel>
-                        <TextBlock x:Name="SuggestionTitleText" Text="Today's Focus" FontWeight="Bold" Foreground="#9D84FF" Margin="0,0,0,2"/>
-                        <TextBlock Text="Based on your settings and training split." Foreground="#A0A6B8" FontSize="11" Margin="0,0,0,6"/>
+                        <TextBlock x:Name="SuggestionTitleText" Text="Today's Focus" FontWeight="Bold" Foreground="#6D4AFF" Margin="0,0,0,4"/>
+                        <TextBlock Text="Based on your settings and training split." Foreground="#8E8E93" FontSize="12" Margin="0,0,0,10"/>
                         <ItemsControl x:Name="SuggestionItemsControl">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding StringFormat='• {0}'}" Foreground="White" FontSize="12" Margin="0,1,0,0"/>
+                                    <TextBlock Text="{Binding StringFormat='• {0}'}" Foreground="White" FontSize="14" Margin="0,2,0,0"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Row="2" Background="#2A3044" CornerRadius="8" Padding="10,0" Height="36" Margin="0,0,0,12">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="🔍" Foreground="#A0A6B8" VerticalAlignment="Center" Margin="0,0,8,0" FontSize="13"/>
-                        <TextBox x:Name="SearchTextBox" Grid.Column="1" TextChanged="SearchTextBox_TextChanged" 
-                                 Background="Transparent" Foreground="White" BorderThickness="0" FontSize="13" VerticalAlignment="Center"/>
-                    </Grid>
-                </Border>
+                <Grid Grid.Row="3" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Background="#2C2C2E" CornerRadius="12" Padding="14,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="🔍" Foreground="#8E8E93" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="16"/>
+                            <TextBox x:Name="SearchTextBox" Grid.Column="1" TextChanged="SearchTextBox_TextChanged" 
+                                     Background="Transparent" Foreground="White" BorderThickness="0" FontSize="16" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
 
-                <ListBox x:Name="ExercisesListView" Grid.Row="3" SelectionChanged="ExercisesListView_SelectionChanged" 
+                    <ComboBox x:Name="CategoryFilterCombo" Grid.Column="1" SelectionChanged="FilterCombo_SelectionChanged" 
+                              Margin="16,0,0,0" Width="130" Height="42" FontSize="15" Padding="10,0"
+                              Background="#2C2C2E" Foreground="Black" BorderThickness="0">
+                        <ComboBoxItem Content="All"/>
+                        <ComboBoxItem Content="Push"/>
+                        <ComboBoxItem Content="Pull"/>
+                        <ComboBoxItem Content="Legs"/>
+                        <ComboBoxItem Content="Cardio"/>
+                    </ComboBox>
+                </Grid>
+
+                <ListBox x:Name="ExercisesListView" Grid.Row="4" SelectionChanged="ExercisesListView_SelectionChanged" 
                          Background="Transparent" BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Padding" Value="0"/>
-                            <Setter Property="Margin" Value="0,0,0,2"/>
+                            <Setter Property="Margin" Value="0,0,0,10"/>
                             <Setter Property="BorderThickness" Value="0"/>
                             <Setter Property="Background" Value="Transparent"/>
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
-                                        <Grid Cursor="Hand" Background="Transparent">
-                                            <Border x:Name="HoverOverlay" Background="#2A3044" CornerRadius="6" Opacity="0"/>
-                                            <Border x:Name="SelectedOverlay" Background="#363D52" BorderThickness="0" CornerRadius="6" Opacity="0"/>
-                                            <Border Padding="8">
-                                                <ContentPresenter />
-                                            </Border>
-                                        </Grid>
+                                        <Border x:Name="CardBorder" Background="#2C2C2E" CornerRadius="12" Padding="16" Cursor="Hand">
+                                            <ContentPresenter />
+                                        </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="HoverOverlay" Property="Opacity" Value="1"/>
+                                                <Setter TargetName="CardBorder" Property="Background" Value="#3A3A3C"/>
                                             </Trigger>
                                             <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="SelectedOverlay" Property="Opacity" Value="1"/>
+                                                <Setter TargetName="CardBorder" Property="Background" Value="#6D4AFF"/>
+                                                <Setter TargetName="CardBorder" Property="BorderBrush" Value="White"/>
+                                                <Setter TargetName="CardBorder" Property="BorderThickness" Value="1"/>
                                             </Trigger>
                                         </ControlTemplate.Triggers>
                                     </ControlTemplate>
@@ -84,16 +99,16 @@
                         <DataTemplate DataType="{x:Type models:Exercise}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18" Background="#F0EBFF" Margin="0,0,12,0" VerticalAlignment="Center">
-                                    <TextBlock Text="🏋️" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,2"/>
-                                </Border>
-                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="14" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="{Binding Muscle}" Foreground="#A0A6B8" FontSize="12" Margin="0,2,0,0"/>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="{Binding Muscle, StringFormat='Target: {0}'}" Foreground="#D1D1D6" FontSize="13" Margin="0,4,0,0"/>
                                 </StackPanel>
+                                <Border Grid.Column="1" Background="#1C1C1E" CornerRadius="6" Padding="10,6" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Equipment}" Foreground="#6D4AFF" FontSize="12" FontWeight="Bold"/>
+                                </Border>
                             </Grid>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
@@ -101,153 +116,71 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Column="1" VerticalAlignment="Top">
-            
-            <Border x:Name="TrackerPanel" Background="#1E2435" CornerRadius="12" Padding="20" Visibility="Visible">
-                <StackPanel>
-                    <TextBlock Text="Exercise Details" FontSize="12" FontWeight="Bold" Foreground="#8B94AD" Margin="0,0,0,4"/>
-                    <TextBlock x:Name="DetailNameText" Text="Select an exercise..." FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,0,0,12"/>
-                    
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
-                        <Border Background="#2A3044" CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
-                            <TextBlock x:Name="DetailEquipText" Text="Equipment: —" Foreground="#A0A6B8" FontSize="12"/>
-                        </Border>
-                        <Border Background="#2A3044" CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
-                            <TextBlock x:Name="DetailPrimaryText" Text="Primary: —" Foreground="#A0A6B8" FontSize="12"/>
-                        </Border>
-                        <Border Background="#2A3044" CornerRadius="6" Padding="8,4">
-                            <TextBlock x:Name="DetailSecondaryText" Text="Secondary: —" Foreground="#A0A6B8" FontSize="12"/>
-                        </Border>
-                    </StackPanel>
+        <Border Grid.Column="1" Background="#1C1C1E" CornerRadius="20" Padding="24">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                    <Border Background="#2A3044" CornerRadius="8" Padding="16" Margin="0,0,0,24">
-                        <StackPanel>
-                            <TextBlock Text="Log Performance" FontWeight="SemiBold" Foreground="White" FontSize="14" Margin="0,0,0,12"/>
-                            <Grid Margin="0,0,0,12">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                    <TextBlock Text="Weight (lbs/kg)" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#1E2435" CornerRadius="6" Height="32">
-                                        <TextBox x:Name="PRWeightTextBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="8,0" VerticalContentAlignment="Center"/>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="4,0,4,0">
-                                    <TextBlock Text="Reps" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#1E2435" CornerRadius="6" Height="32">
-                                        <TextBox x:Name="PRRepsTextBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="8,0" VerticalContentAlignment="Center"/>
-                                    </Border>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Margin="8,0,0,0">
-                                    <TextBlock Text="Date" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#1E2435" CornerRadius="6" Height="32">
-                                        <DatePicker x:Name="PRDatePicker" Background="Transparent" Foreground="White" BorderThickness="0" VerticalContentAlignment="Center"/>
-                                    </Border>
-                                </StackPanel>
-                            </Grid>
+                <TextBlock Grid.Row="0" Text="MNTM TRACKER" FontSize="13" FontWeight="Bold" Foreground="#6D4AFF" Margin="0,0,0,2"/>
+                <TextBlock Grid.Row="1" Text="Performance" FontSize="36" FontWeight="Black" Foreground="White" Margin="0,0,0,20"/>
 
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <TextBlock x:Name="PRStatusText" VerticalAlignment="Center" Margin="0,0,12,0" FontSize="12" FontWeight="SemiBold"/>
-                                <Button x:Name="DeletePRButton" Content="Delete" Background="#FF3B30" Foreground="White" FontWeight="SemiBold" FontSize="13" Padding="12,6" Margin="0,0,8,0" BorderThickness="0" Cursor="Hand" Visibility="Collapsed" Click="DeletePRButton_Click"/>
-                                <Button x:Name="SavePRButton" Content="Log PR" Background="#6D4AFF" Foreground="White" FontWeight="SemiBold" FontSize="13" Padding="16,6" BorderThickness="0" Cursor="Hand" Click="SavePRButton_Click"/>
+                <Border Grid.Row="2" Background="#2C2C2E" CornerRadius="16" Padding="20" Margin="0,0,0,24">
+                    <StackPanel>
+                        <TextBlock Text="Selected Exercise" Foreground="#8E8E93" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <Border Background="#1C1C1E" CornerRadius="8" Margin="0,0,0,16">
+                            <TextBox x:Name="PRExerciseTextBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="14" FontSize="15" IsReadOnly="True" Text="Select an exercise from the left..."/>
+                        </Border>
+
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                                <TextBlock Text="Weight (lbs/kg)" Foreground="#8E8E93" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <Border Background="#1C1C1E" CornerRadius="8">
+                                    <TextBox x:Name="PRWeightTextBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="14" FontSize="15"/>
+                                </Border>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
+                            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                                <TextBlock Text="Date" Foreground="#8E8E93" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                                <Border Background="#1C1C1E" CornerRadius="8">
+                                    <DatePicker x:Name="PRDatePicker" Background="Transparent" Foreground="White" BorderThickness="0" Padding="8,4" Height="42"/>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
 
-                    <TextBlock Text="Trophy Room (History)" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
-                    <ListView x:Name="PRListView" SelectionChanged="PRListView_SelectionChanged" Background="Transparent" BorderThickness="0" Foreground="White" Height="200" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <TextBlock Text="Notes / Reps" Foreground="#8E8E93" FontSize="13" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                        <Border Background="#1C1C1E" CornerRadius="8" Margin="0,0,0,20">
+                            <TextBox x:Name="PRNotesTextBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="14" FontSize="15"/>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="SavePRButton" Content="Log PR" Background="#6D4AFF" Foreground="White" FontWeight="Bold" FontSize="15" Padding="20,12" BorderThickness="0" Cursor="Hand" Click="SavePRButton_Click"/>
+                            <Button x:Name="DeletePRButton" Content="Delete" Background="#FF3B30" Foreground="White" FontWeight="Bold" FontSize="15" Padding="20,12" Margin="12,0,0,0" BorderThickness="0" Cursor="Hand" Visibility="Collapsed" Click="DeletePRButton_Click"/>
+                        </StackPanel>
+                        <TextBlock x:Name="PRStatusText" Margin="0,16,0,0" FontWeight="Bold" FontSize="14"/>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Row="3">
+                    <TextBlock Text="Trophy Room (History)" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,16"/>
+                    
+                    <ListView x:Name="PRListView" SelectionChanged="PRListView_SelectionChanged" Background="Transparent" BorderThickness="0" Foreground="White">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Weight" Width="80" DisplayMemberBinding="{Binding Weight}"/>
-                                <GridViewColumn Header="Reps" Width="60" DisplayMemberBinding="{Binding Reps}"/>
+                                <GridViewColumn Header="Exercise" Width="140" DisplayMemberBinding="{Binding ExerciseName}"/>
+                                <GridViewColumn Header="Weight" Width="60" DisplayMemberBinding="{Binding Weight}"/>
                                 <GridViewColumn Header="Date" Width="100" DisplayMemberBinding="{Binding Date, StringFormat={}{0:MMM dd, yyyy}}"/>
                             </GridView>
                         </ListView.View>
                     </ListView>
                 </StackPanel>
-            </Border>
-
-            <Border x:Name="CustomExercisePanel" Background="#1E2435" CornerRadius="12" Padding="24" Visibility="Collapsed">
-                <StackPanel>
-                    <TextBlock Text="Create Custom Exercise" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,20"/>
-                    
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="20"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Exercise Name" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#2A3044" CornerRadius="6" Height="36" Margin="0,0,0,16">
-                                <TextBox x:Name="CustomNameBox" Background="Transparent" Foreground="White" BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center"/>
-                            </Border>
-
-                            <TextBlock Text="Exercise Type" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#2A3044" CornerRadius="6" Height="36" Margin="0,0,0,16">
-                                <ComboBox x:Name="CustomTypeCombo" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="13" Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
-                                    <ComboBoxItem Content="Weight &amp; Reps"/>
-                                    <ComboBoxItem Content="Reps Only"/>
-                                    <ComboBoxItem Content="Weighted Bodyweight"/>
-                                    <ComboBoxItem Content="Assisted Bodyweight"/>
-                                    <ComboBoxItem Content="Duration"/>
-                                </ComboBox>
-                            </Border>
-
-                            <TextBlock Text="Equipment" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#2A3044" CornerRadius="6" Height="36" Margin="0,0,0,16">
-                                <ComboBox x:Name="CustomEquipCombo" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="13" Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
-                                    <ComboBoxItem Content="None"/>
-                                    <ComboBoxItem Content="Barbell"/>
-                                    <ComboBoxItem Content="Dumbbell"/>
-                                    <ComboBoxItem Content="Machine"/>
-                                    <ComboBoxItem Content="Cable"/>
-                                    <ComboBoxItem Content="Other"/>
-                                </ComboBox>
-                            </Border>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Primary Muscle" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#2A3044" CornerRadius="6" Height="36" Margin="0,0,0,16">
-                                <ComboBox x:Name="CustomPrimaryCombo" Background="Transparent" Foreground="White" BorderThickness="0" FontSize="13" Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
-                                    <ComboBoxItem Content="Chest"/>
-                                    <ComboBoxItem Content="Back"/>
-                                    <ComboBoxItem Content="Legs"/>
-                                    <ComboBoxItem Content="Shoulders"/>
-                                    <ComboBoxItem Content="Biceps"/>
-                                    <ComboBoxItem Content="Triceps"/>
-                                    <ComboBoxItem Content="Core"/>
-                                    <ComboBoxItem Content="Cardio"/>
-                                    <ComboBoxItem Content="Other"/>
-                                </ComboBox>
-                            </Border>
-
-                            <TextBlock Text="Secondary Muscles" Foreground="#A0A6B8" FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#2A3044" CornerRadius="6" Height="108" Margin="0,0,0,16">
-                                <ListBox x:Name="CustomSecondaryList" Background="Transparent" Foreground="White" BorderThickness="0" SelectionMode="Multiple">
-                                    <ListBoxItem Content="Chest"/>
-                                    <ListBoxItem Content="Back"/>
-                                    <ListBoxItem Content="Legs"/>
-                                    <ListBoxItem Content="Shoulders"/>
-                                    <ListBoxItem Content="Biceps"/>
-                                    <ListBoxItem Content="Triceps"/>
-                                </ListBox>
-                            </Border>
-                        </StackPanel>
-                    </Grid>
-
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-                        <TextBlock x:Name="CustomFormErrorText" Foreground="#FF3B30" VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"/>
-                        <Button Content="Cancel" Background="Transparent" Foreground="White" FontWeight="SemiBold" FontSize="14" Padding="16,8" BorderThickness="0" Cursor="Hand" Margin="0,0,8,0" Click="CancelCustom_Click"/>
-                        <Button Content="Save Exercise" Background="#6D4AFF" Foreground="White" FontWeight="SemiBold" FontSize="14" Padding="16,8" BorderThickness="0" Cursor="Hand" Click="SaveCustom_Click"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </UserControl>
