@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Project_5010.Models;
 
 namespace Project_5010.Views
@@ -68,6 +69,51 @@ namespace Project_5010.Views
             PopulateActivityChart(allWorkouts);
             PopulateTypeBreakdown(allWorkouts);
             PopulateHighlights(allWorkouts, thisWeek);
+        }
+
+        public void SetCalorieData(int goalCalories, int consumedToday)
+        {
+            if (goalCalories <= 0)
+            {
+                CalGoalText.Text = "\u2014";
+                CalConsumedText.Text = consumedToday.ToString();
+                CalRemainingText.Text = "\u2014";
+                CalProgressLabel.Text = "Set up profile in Settings";
+                DashCalorieFill.Width = 0;
+                return;
+            }
+
+            int remaining = goalCalories - consumedToday;
+            CalGoalText.Text = goalCalories.ToString();
+            CalConsumedText.Text = consumedToday.ToString();
+
+            if (consumedToday > goalCalories)
+            {
+                CalRemainingText.Text = (consumedToday - goalCalories).ToString();
+                CalRemainingLabel.Text = "kcal over";
+                CalRemainingText.Foreground = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
+                DashCalorieFill.Background = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
+                CalProgressLabel.Text = $"Over by {consumedToday - goalCalories} kcal today";
+                CalProgressLabel.Foreground = new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44));
+            }
+            else
+            {
+                CalRemainingText.Text = remaining.ToString();
+                CalRemainingLabel.Text = "kcal left";
+                CalRemainingText.Foreground = new SolidColorBrush(Color.FromRgb(0x10, 0xB9, 0x81));
+                DashCalorieFill.Background = new SolidColorBrush(Color.FromRgb(0x6D, 0x4A, 0xFF));
+                CalProgressLabel.Text = consumedToday == 0
+                    ? "Log food in Goals to track"
+                    : $"{remaining} kcal remaining";
+                CalProgressLabel.Foreground = new SolidColorBrush(Color.FromRgb(0x95, 0x9C, 0xB0));
+            }
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, new Action(() =>
+            {
+                double trackWidth = ((System.Windows.Controls.Border)DashCalorieFill.Parent).ActualWidth;
+                double percent = goalCalories > 0 ? Math.Min(1.0, (double)consumedToday / goalCalories) : 0;
+                DashCalorieFill.Width = trackWidth * percent;
+            }));
         }
 
         private void PopulateActivityChart(List<object> allWorkouts)

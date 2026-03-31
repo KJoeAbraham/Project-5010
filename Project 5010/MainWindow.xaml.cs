@@ -25,6 +25,8 @@ namespace Project_5010
         private UserControl? _workoutsView;
         private UserControl? _libraryView;
         private SettingsView? _settingsView;
+        private readonly FoodFileService _foodFileService;
+        private UserControl? _goalsView;
 
         private static readonly string[] DailyJokes =
         {
@@ -59,6 +61,7 @@ namespace Project_5010
 
             _workoutFileService = new WorkoutFileService(_username);
             _workouts = new ObservableCollection<Workout>(_workoutFileService.LoadWorkouts());
+            _foodFileService = new FoodFileService(_username);
 
             UpdateHeader();
             ShellJokeText.Text = DailyJokes[(int)DateTime.Today.DayOfWeek];
@@ -89,6 +92,24 @@ namespace Project_5010
                 "Workouts",
                 "Log, edit, and manage sessions from the same shell.",
                 WorkoutsNavButton);
+        }
+
+        private void GoalsNavButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_goalsView == null)
+            {
+                _goalsView = new GoalsView(_settings, _foodFileService);
+            }
+            else
+            {
+                (_goalsView as GoalsView)?.RefreshFood();
+            }
+
+            ShowView(
+                _goalsView,
+                "Goals",
+                "Daily calorie target and nutrition tracking.",
+                GoalsNavButton);
         }
 
         private void LibraryNavButton_Click(object sender, RoutedEventArgs e)
@@ -138,11 +159,13 @@ namespace Project_5010
             if (_dashboardView == null)
             {
                 _dashboardView = new DashboardView(_workouts, _settings);
+                RefreshDashboardCalories();
             }
             else
             {
                 _dashboardView.ApplySettings(_settings);
                 _dashboardView.RefreshStats();
+                RefreshDashboardCalories();
             }
 
             ShowView(
@@ -163,6 +186,22 @@ namespace Project_5010
                 _dashboardView.ApplySettings(_settings);
                 _dashboardView.RefreshStats();
             }
+
+            RefreshDashboardCalories();
+        }
+
+        private void RefreshDashboardCalories()
+        {
+            if (_dashboardView == null) return;
+            int goal = Services.CalorieCalculator.CalculateDailyGoal(
+                _settings.WeightKg, _settings.HeightCm, _settings.Age,
+                _settings.Sex, _settings.ActivityLevel, _settings.GoalType);
+
+            var todayFood = _foodFileService.Load()
+                .Where(f => f.Date.Date == DateTime.Today)
+                .Sum(f => f.Calories);
+
+            _dashboardView.SetCalorieData(goal, todayFood);
         }
 
         private void ShowView(UserControl view, string pageTitle, string pageSubtitle, Button activeButton)
@@ -180,6 +219,7 @@ namespace Project_5010
                 DashboardNavButton,
                 WorkoutsNavButton,
                 LibraryNavButton,
+                GoalsNavButton,
                 SettingsNavButton
             };
 

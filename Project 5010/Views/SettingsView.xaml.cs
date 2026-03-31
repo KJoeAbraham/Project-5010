@@ -38,6 +38,22 @@ namespace Project_5010.Views
             DisplayNameTextBox.Text = _settings.DisplayName;
             HeightTextBox.Text = _settings.HeightCm.ToString("0.##", CultureInfo.InvariantCulture);
             WeightTextBox.Text = _settings.WeightKg.ToString("0.##", CultureInfo.InvariantCulture);
+            AgeTextBox.Text = _settings.Age > 0 ? _settings.Age.ToString() : "";
+            SexCombo.SelectedIndex = _settings.Sex == "Female" ? 1 : 0;
+            ActivityLevelCombo.SelectedIndex = _settings.ActivityLevel switch
+            {
+                "Sedentary"   => 0,
+                "Light"       => 1,
+                "Active"      => 3,
+                "Very Active" => 4,
+                _             => 2
+            };
+            GoalTypeCombo.SelectedIndex = _settings.GoalType switch
+            {
+                "Lose Weight" => 0,
+                "Gain Weight" => 2,
+                _             => 1
+            };
 
             switch (NormalizeSplitId(_settings.SplitPlanId))
             {
@@ -78,6 +94,11 @@ namespace Project_5010.Views
             _settings.DisplayName = displayName;
             _settings.HeightCm = heightCm;
             _settings.WeightKg = weightKg;
+            if (int.TryParse(AgeTextBox.Text, out int age) && age > 0)
+                _settings.Age = age;
+            _settings.Sex = ((ComboBoxItem)SexCombo.SelectedItem)?.Content?.ToString() ?? "Male";
+            _settings.ActivityLevel = ((ComboBoxItem)ActivityLevelCombo.SelectedItem)?.Content?.ToString() ?? "Moderate";
+            _settings.GoalType = ((ComboBoxItem)GoalTypeCombo.SelectedItem)?.Content?.ToString() ?? "Maintain";
             _settings.SplitPlanId = GetSelectedSplitId();
 
             _settingsService.Save(_settings, _username);
