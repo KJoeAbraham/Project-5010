@@ -109,6 +109,26 @@ namespace Project_5010.Services
                 settings.WeightKg = 70;
             }
 
+            if (settings.Age <= 0)
+            {
+                settings.Age = 25;
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.Sex))
+            {
+                settings.Sex = "Male";
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.ActivityLevel))
+            {
+                settings.ActivityLevel = "Moderate";
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.GoalType))
+            {
+                settings.GoalType = "Maintain";
+            }
+
             if (string.IsNullOrWhiteSpace(settings.SplitPlanId))
             {
                 settings.SplitPlanId = "PPL";

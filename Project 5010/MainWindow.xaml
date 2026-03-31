@@ -162,6 +162,26 @@
                         </Grid>
                     </Button>
 
+                    <Button x:Name="GoalsNavButton"
+                            Style="{StaticResource NavButtonStyle}"
+                            Click="GoalsNavButton_Click">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE77F;"
+                                       FontSize="16"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Goals"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
                     <Button x:Name="SettingsNavButton"
                             Style="{StaticResource NavButtonStyle}"
                             Click="SettingsNavButton_Click">

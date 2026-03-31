@@ -37,10 +37,10 @@ namespace Project_5010.Services
         private static string SanitizeName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "default";
-            string s = name.Trim();
+            string sanitized = name.Trim();
             foreach (char c in Path.GetInvalidFileNameChars())
-                s = s.Replace(c.ToString(), string.Empty);
-            return string.IsNullOrWhiteSpace(s) ? "default" : s;
+                sanitized = sanitized.Replace(c.ToString(), string.Empty);
+            return string.IsNullOrWhiteSpace(sanitized) ? "default" : sanitized;
         }
     }
 }

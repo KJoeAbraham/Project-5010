@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,27 +19,27 @@ namespace Project_5010
         private readonly SettingsFileService _settingsService;
         private UserSettings _settings;
         private readonly WorkoutFileService _workoutFileService;
+        private readonly FoodFileService _foodFileService;
         private readonly ObservableCollection<Workout> _workouts;
 
         private DashboardView? _dashboardView;
         private UserControl? _workoutsView;
         private UserControl? _libraryView;
         private SettingsView? _settingsView;
+        private GoalsView? _goalsView;
 
         private static readonly string[] DailyJokes =
         {
-            "Rest day. Even champions need a Sunday. Your gains aren't going anywhere. 😴",   // Sun
-            "New week, new PRs. Mondays hit different when you actually show up. 💪",          // Mon
-            "Two days in. The people who quit? They're watching Netflix. You're here. 🔥",     // Tue
-            "Midweek grind. The bar doesn't care what day it is — neither should you. 😤",     // Wed
-            "Thursday. The unsung hero of the gym week. Almost there, don't fold. 🏋️",        // Thu
-            "Friday lifts hit different. End the week the same way you started: strong. 🎯",   // Fri
-            "Saturday gainz. The gym is half empty. The weights are full of potential. 🚀",    // Sat
+            "Why did the gym close down? It just didn't work out.",
+            "I told my trainer I wanted to lose weight — he handed me dumbbells. Still not sure that was a compliment.",
+            "Running late counts as cardio, right?",
+            "Rest day: because even legends need to binge-watch something.",
+            "I do leg day so that I can skip leg day next week.",
+            "My protein shake has more personality than most people I know.",
+            "The only bad workout is the one that didn't happen. Unless it's Monday."
         };
 
-        public MainWindow() : this(null)
-        {
-        }
+        public MainWindow() : this(null) { }
 
         public MainWindow(string? username)
         {
@@ -58,10 +58,12 @@ namespace Project_5010
             }
 
             _workoutFileService = new WorkoutFileService(_username);
+            _foodFileService = new FoodFileService(_username);
             _workouts = new ObservableCollection<Workout>(_workoutFileService.LoadWorkouts());
 
-            UpdateHeader();
             ShellJokeText.Text = DailyJokes[(int)DateTime.Today.DayOfWeek];
+
+            UpdateHeader();
             NavigateDashboard();
         }
 
@@ -103,7 +105,7 @@ namespace Project_5010
                     _workoutFileService)
                     ?? BuildPlaceholderView(
                         "LibraryView not found",
-                        "This shell is ready to push split settings into LibraryView. If your current LibraryView has different methods, send it to me and I will adjust it.");
+                        "This shell is ready to push split settings into LibraryView.");
             }
 
             ApplySettingsToLibrary(_libraryView);
@@ -113,6 +115,20 @@ namespace Project_5010
                 "Library",
                 "Exercise tabs can adapt to the split selected in Settings.",
                 LibraryNavButton);
+        }
+
+        private void GoalsNavButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_goalsView == null)
+            {
+                _goalsView = new GoalsView(_settings, _foodFileService);
+            }
+
+            ShowView(
+                _goalsView,
+                "Goals",
+                "Track daily calories and nutrition to support your training.",
+                GoalsNavButton);
         }
 
         private void SettingsNavButton_Click(object sender, RoutedEventArgs e)
@@ -145,6 +161,8 @@ namespace Project_5010
                 _dashboardView.RefreshStats();
             }
 
+            RefreshDashboardCalories();
+
             ShowView(
                 _dashboardView,
                 "Dashboard",
@@ -162,7 +180,22 @@ namespace Project_5010
             {
                 _dashboardView.ApplySettings(_settings);
                 _dashboardView.RefreshStats();
+                RefreshDashboardCalories();
             }
+
+            _goalsView?.ApplySettings(_settings);
+        }
+
+        private void RefreshDashboardCalories()
+        {
+            if (_dashboardView == null) return;
+
+            int goal = CalorieCalculator.CalculateDailyGoal(
+                _settings.WeightKg, _settings.HeightCm, _settings.Age,
+                _settings.Sex, _settings.ActivityLevel, _settings.GoalType);
+
+            int consumed = _foodFileService.LoadForDate(DateTime.Today).Sum(e => e.Calories);
+            _dashboardView.SetCalorieData(goal, consumed);
         }
 
         private void ShowView(UserControl view, string pageTitle, string pageSubtitle, Button activeButton)
@@ -180,6 +213,7 @@ namespace Project_5010
                 DashboardNavButton,
                 WorkoutsNavButton,
                 LibraryNavButton,
+                GoalsNavButton,
                 SettingsNavButton
             };
 
@@ -207,11 +241,7 @@ namespace Project_5010
 
         private void ApplySettingsToLibrary(UserControl? view)
         {
-            if (view == null)
-            {
-                return;
-            }
-
+            if (view == null) return;
             InvokeIfPresent(view, "ApplyUserSettings", _settings);
             InvokeIfPresent(view, "ApplySettings", _settings);
             InvokeIfPresent(view, "ConfigureTabsForSplit", _settings.SplitPlanId);
@@ -222,27 +252,13 @@ namespace Project_5010
         private static UserControl? TryCreateExternalView(string shortTypeName, params object?[] preferredArguments)
         {
             Type? viewType = FindTypeByShortName(shortTypeName);
-            if (viewType == null || !typeof(UserControl).IsAssignableFrom(viewType))
-            {
-                return null;
-            }
+            if (viewType == null || !typeof(UserControl).IsAssignableFrom(viewType)) return null;
 
             List<object?[]> attempts = new List<object?[]>();
-
             object?[] full = preferredArguments.Where(a => a != null).ToArray();
-            if (full.Length > 0)
-            {
-                attempts.Add(full);
-            }
-
+            if (full.Length > 0) attempts.Add(full);
             foreach (object? argument in preferredArguments)
-            {
-                if (argument != null)
-                {
-                    attempts.Add(new[] { argument });
-                }
-            }
-
+                if (argument != null) attempts.Add(new[] { argument });
             attempts.Add(Array.Empty<object?>());
 
             foreach (ConstructorInfo constructor in viewType.GetConstructors().OrderByDescending(c => c.GetParameters().Length))
@@ -250,47 +266,23 @@ namespace Project_5010
                 foreach (object?[] attempt in attempts)
                 {
                     ParameterInfo[] parameters = constructor.GetParameters();
-                    if (parameters.Length != attempt.Length)
-                    {
-                        continue;
-                    }
+                    if (parameters.Length != attempt.Length) continue;
 
                     bool valid = true;
-
                     for (int i = 0; i < parameters.Length; i++)
                     {
                         object? suppliedValue = attempt[i];
-
                         if (suppliedValue == null)
                         {
-                            if (parameters[i].ParameterType.IsValueType)
-                            {
-                                valid = false;
-                                break;
-                            }
-
+                            if (parameters[i].ParameterType.IsValueType) { valid = false; break; }
                             continue;
                         }
-
-                        if (!parameters[i].ParameterType.IsInstanceOfType(suppliedValue))
-                        {
-                            valid = false;
-                            break;
-                        }
+                        if (!parameters[i].ParameterType.IsInstanceOfType(suppliedValue)) { valid = false; break; }
                     }
 
-                    if (!valid)
-                    {
-                        continue;
-                    }
-
-                    try
-                    {
-                        return (UserControl)constructor.Invoke(attempt);
-                    }
-                    catch
-                    {
-                    }
+                    if (!valid) continue;
+                    try { return (UserControl)constructor.Invoke(attempt); }
+                    catch { }
                 }
             }
 
@@ -302,85 +294,48 @@ namespace Project_5010
             foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 Type[] types;
-                try
-                {
-                    types = assembly.GetTypes();
-                }
-                catch (ReflectionTypeLoadException ex)
-                {
-                    types = ex.Types.Where(t => t != null).Cast<Type>().ToArray();
-                }
+                try { types = assembly.GetTypes(); }
+                catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t != null).Cast<Type>().ToArray(); }
 
                 Type? found = types.FirstOrDefault(t => t.Name.Equals(shortTypeName, StringComparison.Ordinal));
-                if (found != null)
-                {
-                    return found;
-                }
+                if (found != null) return found;
             }
-
             return null;
         }
 
         private static void InvokeIfPresent(object target, string methodName, object? argument)
         {
             MethodInfo[] methods = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-
             foreach (MethodInfo method in methods.Where(m => m.Name.Equals(methodName, StringComparison.Ordinal)))
             {
                 ParameterInfo[] parameters = method.GetParameters();
-                if (parameters.Length != 1)
-                {
-                    continue;
-                }
-
+                if (parameters.Length != 1) continue;
                 if (argument == null)
                 {
-                    if (parameters[0].ParameterType.IsValueType)
-                    {
-                        continue;
-                    }
+                    if (parameters[0].ParameterType.IsValueType) continue;
                 }
-                else if (!parameters[0].ParameterType.IsInstanceOfType(argument))
-                {
-                    continue;
-                }
+                else if (!parameters[0].ParameterType.IsInstanceOfType(argument)) continue;
 
-                try
-                {
-                    method.Invoke(target, new[] { argument });
-                    return;
-                }
-                catch
-                {
-                }
+                try { method.Invoke(target, new[] { argument }); return; }
+                catch { }
             }
         }
 
         private static string ToPrettySplit(string rawSplit)
         {
-            if (string.IsNullOrWhiteSpace(rawSplit))
-            {
-                return "PPL";
-            }
-
+            if (string.IsNullOrWhiteSpace(rawSplit)) return "PPL";
             string value = rawSplit.Trim().Replace("_", " ").Replace("-", " ");
-
-            switch (value.ToLowerInvariant())
+            return value.ToLowerInvariant() switch
             {
-                case "ppl":
-                    return "PPL";
-                case "upper lower":
-                case "upperlower":
-                    return "Upper / Lower";
-                case "full body":
-                case "fullbody":
-                    return "Full Body";
-                case "bro split":
-                case "brosplit":
-                    return "Bro Split";
-                default:
-                    return value;
-            }
+                "ppl"          => "PPL",
+                "upper lower"  => "Upper / Lower",
+                "upperlower"   => "Upper / Lower",
+                "full body"    => "Full Body",
+                "fullbody"     => "Full Body",
+                "bro split"    => "Bro Split",
+                "brosplit"     => "Bro Split",
+                _              => value
+            };
         }
 
         private static UserControl BuildPlaceholderView(string title, string message)
@@ -396,7 +351,6 @@ namespace Project_5010
             };
 
             StackPanel stack = new StackPanel();
-
             stack.Children.Add(new TextBlock
             {
                 Text = title,
@@ -404,7 +358,6 @@ namespace Project_5010
                 FontWeight = FontWeights.SemiBold,
                 Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E2435"))
             });
-
             stack.Children.Add(new TextBlock
             {
                 Text = message,
@@ -413,13 +366,9 @@ namespace Project_5010
                 FontSize = 14,
                 Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6E7386"))
             });
-
             card.Child = stack;
 
-            return new UserControl
-            {
-                Content = card
-            };
+            return new UserControl { Content = card };
         }
     }
 }
