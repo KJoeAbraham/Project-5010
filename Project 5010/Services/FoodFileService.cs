@@ -1,51 +1,49 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using Project_5010.Models;
 
 namespace Project_5010.Services
 {
-    public class WorkoutFileService
+    public class FoodFileService
     {
         private readonly string filePath;
+        private static readonly JsonSerializerOptions JsonOpts = new JsonSerializerOptions { WriteIndented = true };
 
-        public WorkoutFileService(string username = "default")
+        public FoodFileService(string username = "default")
         {
             string sanitized = SanitizeName(username);
             string dataFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Momentum", "Profiles", sanitized);
             Directory.CreateDirectory(dataFolder);
-            filePath = Path.Combine(dataFolder, "workouts.json");
+            filePath = Path.Combine(dataFolder, "food.json");
         }
 
-        public List<Workout> LoadWorkouts()
+        public List<FoodEntry> LoadAll()
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath)) return new List<FoodEntry>();
+            try
             {
-                return new List<Workout>();
+                string json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<List<FoodEntry>>(json) ?? new List<FoodEntry>();
             }
-
-            string json = File.ReadAllText(filePath);
-
-            if (string.IsNullOrWhiteSpace(json))
+            catch
             {
-                return new List<Workout>();
+                return new List<FoodEntry>();
             }
-
-            return JsonSerializer.Deserialize<List<Workout>>(json) ?? new List<Workout>();
         }
 
-        public void SaveWorkouts(List<Workout> workouts)
+        public List<FoodEntry> LoadForDate(DateTime date)
         {
-            JsonSerializerOptions options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
+            return LoadAll().Where(e => e.Date.Date == date.Date).ToList();
+        }
 
-            string json = JsonSerializer.Serialize(workouts, options);
-            File.WriteAllText(filePath, json);
+        public void Save(List<FoodEntry> entries)
+        {
+            File.WriteAllText(filePath, JsonSerializer.Serialize(entries, JsonOpts));
         }
 
         private static string SanitizeName(string name)

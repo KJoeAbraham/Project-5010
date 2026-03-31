@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
@@ -10,9 +10,12 @@ namespace Project_5010.Services
     {
         private readonly string filePath;
 
-        public PRFileService()
+        public PRFileService(string username = "default")
         {
-            string dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            string sanitized = SanitizeName(username);
+            string dataFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Momentum", "Profiles", sanitized);
             Directory.CreateDirectory(dataFolder);
             filePath = Path.Combine(dataFolder, "prs.json");
         }
@@ -28,6 +31,15 @@ namespace Project_5010.Services
         {
             var opts = new JsonSerializerOptions { WriteIndented = true };
             File.WriteAllText(filePath, JsonSerializer.Serialize(prs, opts));
+        }
+
+        private static string SanitizeName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return "default";
+            string sanitized = name.Trim();
+            foreach (char c in Path.GetInvalidFileNameChars())
+                sanitized = sanitized.Replace(c.ToString(), string.Empty);
+            return string.IsNullOrWhiteSpace(sanitized) ? "default" : sanitized;
         }
     }
 }

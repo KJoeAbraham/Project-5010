@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Project_5010.Views.SettingsView"
+<UserControl x:Class="Project_5010.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Background="#F5F6FA">
@@ -120,6 +120,11 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="#333A50"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+        </Style>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -160,7 +165,54 @@
                         <TextBox x:Name="HeightTextBox" Style="{StaticResource InputStyle}" Margin="0,0,0,18"/>
 
                         <TextBlock Text="Weight (kg)" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="WeightTextBox" Style="{StaticResource InputStyle}"/>
+                        <TextBox x:Name="WeightTextBox" Style="{StaticResource InputStyle}" Margin="0,0,0,18"/>
+
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Age" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="AgeTextBox" Style="{StaticResource InputStyle}"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Sex" Style="{StaticResource FieldLabelStyle}"/>
+                                <Border Background="#FBFBFE" BorderBrush="#E6E8F0" BorderThickness="1" CornerRadius="16" Height="46">
+                                    <ComboBox x:Name="SexCombo" Background="Transparent" Foreground="#333A50"
+                                              BorderThickness="0" FontSize="14" Padding="10,0"
+                                              VerticalContentAlignment="Center" SelectedIndex="0">
+                                        <ComboBoxItem Content="Male"/>
+                                        <ComboBoxItem Content="Female"/>
+                                    </ComboBox>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+
+                        <TextBlock Text="Activity Level" Style="{StaticResource FieldLabelStyle}"/>
+                        <Border Background="#FBFBFE" BorderBrush="#E6E8F0" BorderThickness="1" CornerRadius="16" Height="46" Margin="0,0,0,18">
+                            <ComboBox x:Name="ActivityLevelCombo" Background="Transparent" Foreground="#333A50"
+                                      BorderThickness="0" FontSize="14" Padding="10,0"
+                                      VerticalContentAlignment="Center" SelectedIndex="2">
+                                <ComboBoxItem Content="Sedentary"/>
+                                <ComboBoxItem Content="Light"/>
+                                <ComboBoxItem Content="Moderate"/>
+                                <ComboBoxItem Content="Active"/>
+                                <ComboBoxItem Content="Very Active"/>
+                            </ComboBox>
+                        </Border>
+
+                        <TextBlock Text="Goal" Style="{StaticResource FieldLabelStyle}"/>
+                        <Border Background="#FBFBFE" BorderBrush="#E6E8F0" BorderThickness="1" CornerRadius="16" Height="46">
+                            <ComboBox x:Name="GoalTypeCombo" Background="Transparent" Foreground="#333A50"
+                                      BorderThickness="0" FontSize="14" Padding="10,0"
+                                      VerticalContentAlignment="Center" SelectedIndex="1">
+                                <ComboBoxItem Content="Lose Weight"/>
+                                <ComboBoxItem Content="Maintain"/>
+                                <ComboBoxItem Content="Gain Weight"/>
+                            </ComboBox>
+                        </Border>
                     </StackPanel>
                 </Border>
 
@@ -256,6 +308,42 @@
                                        FontSize="13"
                                        Foreground="#727990"
                                        TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Style="{StaticResource CardStyle}" Margin="0,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Account"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       Foreground="#1D2435"
+                                       Margin="0,0,0,8"/>
+                            <TextBlock Text="Signing out returns you to the login screen. Your data stays saved."
+                                       FontSize="12"
+                                       Foreground="#727990"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,14"/>
+                            <Button Content="Log Out"
+                                    Height="44"
+                                    Background="#FEF2F2"
+                                    Foreground="#DC2626"
+                                    FontSize="14"
+                                    FontWeight="SemiBold"
+                                    BorderThickness="1"
+                                    BorderBrush="#FECACA"
+                                    Cursor="Hand"
+                                    Click="LogoutButton_Click">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="14">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
                         </StackPanel>
                     </Border>
                 </StackPanel>

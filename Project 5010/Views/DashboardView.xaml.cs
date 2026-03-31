@@ -7,6 +7,8 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Threading;
 using Project_5010.Models;
 
 namespace Project_5010.Views
@@ -44,6 +46,34 @@ namespace Project_5010.Views
             _settings = settings;
             string displayName = string.IsNullOrWhiteSpace(_settings.DisplayName) ? "Athlete" : _settings.DisplayName;
             WelcomeText.Text = "Welcome back, " + displayName;
+        }
+
+        public void SetCalorieData(int goalCalories, int consumedToday)
+        {
+            int remaining = goalCalories - consumedToday;
+            bool over = consumedToday > goalCalories;
+
+            CalGoalText.Text = goalCalories.ToString();
+            CalConsumedText.Text = consumedToday.ToString();
+            CalRemainingText.Text = Math.Abs(remaining).ToString();
+            CalProgressLabel.Text = over
+                ? $"{consumedToday - goalCalories} kcal over goal"
+                : $"{(int)(Math.Min(1.0, goalCalories > 0 ? (double)consumedToday / goalCalories : 0) * 100)}% of goal";
+
+            var fillColor = over
+                ? new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44))
+                : new SolidColorBrush(Color.FromRgb(0x6D, 0x4A, 0xFF));
+            DashCalorieFill.Background = fillColor;
+            CalRemainingText.Foreground = over
+                ? new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44))
+                : (Brush)new SolidColorBrush(Color.FromRgb(0x20, 0x26, 0x37));
+
+            double pct = goalCalories > 0 ? Math.Min(1.0, (double)consumedToday / goalCalories) : 0;
+            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
+            {
+                double containerWidth = DashCalorieFill.Parent is Grid g ? g.ActualWidth : 200;
+                DashCalorieFill.Width = containerWidth * pct;
+            });
         }
 
         public void RefreshStats()

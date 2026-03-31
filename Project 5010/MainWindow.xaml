@@ -185,6 +185,26 @@
                         </Grid>
                     </Button>
 
+                    <Button x:Name="GoalsNavButton"
+                            Style="{StaticResource NavButtonStyle}"
+                            Click="GoalsNavButton_Click">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="34"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       FontFamily="Segoe MDL2 Assets"
+                                       Text="&#xE77F;"
+                                       FontSize="16"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Goals"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
                     <Button x:Name="SettingsNavButton"
                             Style="{StaticResource NavButtonStyle}"
                             Click="SettingsNavButton_Click">
@@ -214,11 +234,11 @@
                         BorderThickness="1"
                         CornerRadius="18">
                     <StackPanel>
-                        <TextBlock Text="Momentum shell"
+                        <TextBlock Text="Daily Momentum"
                                    FontSize="14"
                                    FontWeight="SemiBold"
                                    Foreground="#23283A"/>
-                        <TextBlock Text="Settings update the header and can push split changes into LibraryView."
+                        <TextBlock x:Name="ShellJokeText"
                                    TextWrapping="Wrap"
                                    Margin="0,6,0,0"
                                    FontSize="12"
