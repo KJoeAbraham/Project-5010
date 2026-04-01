@@ -1,4 +1,9 @@
-﻿using System;
+﻿// AuthService.cs
+// Handles user registration and login.
+// Passwords are hashed using PBKDF2 with SHA256 (100,000 iterations)
+// so they're stored securely — we never save plain text passwords.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -157,9 +162,10 @@ namespace Project_5010.Services
 
             if (!File.Exists(_usersFilePath))
             {
-                File.WriteAllText(_usersFilePath, "[]");
+                SaveUsers(new List<UserAccount>());
             }
         }
+
         private List<UserAccount> LoadUsers()
         {
             try

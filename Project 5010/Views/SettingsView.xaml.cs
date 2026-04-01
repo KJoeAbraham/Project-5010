@@ -1,3 +1,8 @@
+﻿// SettingsView.cs
+// Lets the user edit their profile (name, height, weight, age, sex),
+// choose their activity level, fitness goal, training split, and theme.
+// Changes are saved to settings.json and applied across the app.
+
 using Project_5010.Services;
 using Project_5010.Models;
 using System;
@@ -50,10 +55,14 @@ namespace Project_5010.Views
             };
             GoalTypeCombo.SelectedIndex = _settings.GoalType switch
             {
-                "Lose Weight" => 0,
-                "Gain Weight" => 2,
-                _             => 1
+                "Lose Weight"     => 0,
+                "Gain Weight"     => 2,
+                "Improve Fitness" => 3,
+                _                 => 1
             };
+
+            // Theme toggle
+            DarkModeToggle.IsChecked = _settings.ThemePreference == "Dark";
 
             switch (NormalizeSplitId(_settings.SplitPlanId))
             {
@@ -81,8 +90,15 @@ namespace Project_5010.Views
             bool heightValid = double.TryParse(HeightTextBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double heightCm);
             bool weightValid = double.TryParse(WeightTextBox.Text, NumberStyles.Float, CultureInfo.InvariantCulture, out double weightKg);
 
-            if (!heightValid) heightCm = 170;
-            if (!weightValid) weightKg = 70;
+            if (!heightValid)
+            {
+                heightCm = 170;
+            }
+
+            if (!weightValid)
+            {
+                weightKg = 70;
+            }
 
             _settings.DisplayName = displayName;
             _settings.HeightCm = heightCm;
@@ -93,6 +109,7 @@ namespace Project_5010.Views
             _settings.ActivityLevel = ((ComboBoxItem)ActivityLevelCombo.SelectedItem)?.Content?.ToString() ?? "Moderate";
             _settings.GoalType = ((ComboBoxItem)GoalTypeCombo.SelectedItem)?.Content?.ToString() ?? "Maintain";
             _settings.SplitPlanId = GetSelectedSplitId();
+            _settings.ThemePreference = DarkModeToggle.IsChecked == true ? "Dark" : "Light";
 
             _settingsService.Save(_settings, _username);
 
@@ -139,10 +156,44 @@ namespace Project_5010.Views
 
         private string GetSelectedSplitId()
         {
-            if (UpperLowerRadioButton.IsChecked == true) return "UpperLower";
-            if (FullBodyRadioButton.IsChecked == true) return "FullBody";
-            if (BroSplitRadioButton.IsChecked == true) return "BroSplit";
+            if (UpperLowerRadioButton.IsChecked == true)
+            {
+                return "UpperLower";
+            }
+
+            if (FullBodyRadioButton.IsChecked == true)
+            {
+                return "FullBody";
+            }
+
+            if (BroSplitRadioButton.IsChecked == true)
+            {
+                return "BroSplit";
+            }
+
             return "PPL";
+        }
+
+        private static string NormalizeSplitId(string? value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return "PPL";
+            }
+
+            string normalized = value.Trim().Replace(" ", string.Empty).Replace("/", string.Empty).Replace("_", string.Empty).Replace("-", string.Empty);
+
+            switch (normalized.ToLowerInvariant())
+            {
+                case "upperlower":
+                    return "UpperLower";
+                case "fullbody":
+                    return "FullBody";
+                case "brosplit":
+                    return "BroSplit";
+                default:
+                    return "PPL";
+            }
         }
 
         private void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -150,28 +201,19 @@ namespace Project_5010.Views
             LogoutRequested?.Invoke();
         }
 
-        private static string NormalizeSplitId(string? value)
-        {
-            if (string.IsNullOrWhiteSpace(value)) return "PPL";
-            string normalized = value.Trim().Replace(" ", string.Empty).Replace("/", string.Empty).Replace("_", string.Empty).Replace("-", string.Empty);
-            return normalized.ToLowerInvariant() switch
-            {
-                "upperlower" => "UpperLower",
-                "fullbody"   => "FullBody",
-                "brosplit"   => "BroSplit",
-                _            => "PPL"
-            };
-        }
-
         private static string ToPrettySplit(string splitId)
         {
-            return NormalizeSplitId(splitId) switch
+            switch (NormalizeSplitId(splitId))
             {
-                "UpperLower" => "Upper / Lower",
-                "FullBody"   => "Full Body",
-                "BroSplit"   => "Bro Split",
-                _            => "PPL"
-            };
+                case "UpperLower":
+                    return "Upper / Lower";
+                case "FullBody":
+                    return "Full Body";
+                case "BroSplit":
+                    return "Bro Split";
+                default:
+                    return "PPL";
+            }
         }
     }
 }

@@ -1,3 +1,7 @@
+// PRFileService.cs
+// Handles saving and loading personal records (PRs) to/from prs.json.
+// PRs track the user's best lifts for each exercise.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,10 +40,10 @@ namespace Project_5010.Services
         private static string SanitizeName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "default";
-            string sanitized = name.Trim();
+            string s = name.Trim();
             foreach (char c in Path.GetInvalidFileNameChars())
-                sanitized = sanitized.Replace(c.ToString(), string.Empty);
-            return string.IsNullOrWhiteSpace(sanitized) ? "default" : sanitized;
+                s = s.Replace(c.ToString(), string.Empty);
+            return string.IsNullOrWhiteSpace(s) ? "default" : s;
         }
     }
 }

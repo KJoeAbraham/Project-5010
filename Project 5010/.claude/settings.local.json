@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/MSI-/RiderProjects/MNTM/**)",
+      "Bash(zip -r \"/c/Users/MSI-/RiderProjects/MNTM/Momentum_SourceCode.zip\" \"Project_5010.sln\" \"Project 5010/Project_5010.csproj\" \"Project 5010/README.txt\" \"Project 5010/App.xaml\" \"Project 5010/App.xaml.cs\" \"Project 5010/AssemblyInfo.cs\" \"Project 5010/LoginWindow.xaml\" \"Project 5010/LoginWindow.xaml.cs\" \"Project 5010/MainWindow.xaml\" \"Project 5010/MainWindow.xaml.cs\" \"Project 5010/Models/\" \"Project 5010/Services/\" \"Project 5010/Views/\")",
+      "WebSearch",
+      "Bash(dotnet build:*)"
+    ]
+  }
+}

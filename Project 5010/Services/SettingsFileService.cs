@@ -1,4 +1,8 @@
-﻿using System;
+﻿// SettingsFileService.cs
+// Handles saving and loading user settings to/from a JSON file.
+// Each user gets their own settings file in their profile folder.
+
+using System;
 using System.IO;
 using System.Text.Json;
 using Project_5010.Models;
@@ -88,10 +92,14 @@ namespace Project_5010.Services
                 DisplayName = "Athlete",
                 HeightCm = 170,
                 WeightKg = 70,
-                SplitPlanId = "PPL"
+                SplitPlanId = "PPL",
+                DailyCalorieTarget = 2000
             };
         }
 
+        // Makes sure no fields are left blank or invalid after loading from JSON.
+        // Also detects if an existing user already set up their profile, so they
+        // don't get forced through onboarding again.
         private static void SeedMissingDefaults(UserSettings settings)
         {
             if (string.IsNullOrWhiteSpace(settings.DisplayName))
@@ -109,29 +117,30 @@ namespace Project_5010.Services
                 settings.WeightKg = 70;
             }
 
-            if (settings.Age <= 0)
-            {
-                settings.Age = 25;
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.Sex))
-            {
-                settings.Sex = "Male";
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.ActivityLevel))
-            {
-                settings.ActivityLevel = "Moderate";
-            }
-
-            if (string.IsNullOrWhiteSpace(settings.GoalType))
-            {
-                settings.GoalType = "Maintain";
-            }
-
             if (string.IsNullOrWhiteSpace(settings.SplitPlanId))
             {
                 settings.SplitPlanId = "PPL";
+            }
+
+            if (string.IsNullOrWhiteSpace(settings.ThemePreference))
+            {
+                settings.ThemePreference = "Light";
+            }
+
+            if (settings.DailyCalorieTarget <= 0)
+            {
+                settings.DailyCalorieTarget = 2000;
+            }
+
+            // If the user already filled in their profile before we added onboarding,
+            // skip it automatically so they aren't asked to set up again
+            if (!settings.IsOnboardingComplete
+                && settings.Age > 0
+                && settings.WeightKg > 0
+                && settings.HeightCm > 0
+                && settings.DisplayName != "Athlete")
+            {
+                settings.IsOnboardingComplete = true;
             }
         }
 

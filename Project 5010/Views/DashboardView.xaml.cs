@@ -1,4 +1,9 @@
-﻿using System;
+﻿// DashboardView.cs
+// The main dashboard that shows an overview of the user's fitness data.
+// Displays: total workouts, training time, weekly stats, calorie tracking,
+// a 7-day activity chart, workout type breakdown, and session highlights.
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,8 +13,8 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Project_5010.Models;
+using Project_5010.Services;
 
 namespace Project_5010.Views
 {
@@ -19,6 +24,7 @@ namespace Project_5010.Views
         private readonly ObservableCollection<DailyActivityPoint> _activityPoints;
         private readonly ObservableCollection<WorkoutTypeBreakdown> _typeBreakdown;
         private UserSettings _settings;
+        private FoodFileService? _foodService;
 
         public DashboardView(object? workoutsSource, UserSettings settings)
         {
@@ -41,39 +47,17 @@ namespace Project_5010.Views
             RefreshStats();
         }
 
+        // Allows MainWindow to pass the food service for macro tracking
+        public void SetFoodService(FoodFileService foodService)
+        {
+            _foodService = foodService;
+        }
+
         public void ApplySettings(UserSettings settings)
         {
             _settings = settings;
             string displayName = string.IsNullOrWhiteSpace(_settings.DisplayName) ? "Athlete" : _settings.DisplayName;
             WelcomeText.Text = "Welcome back, " + displayName;
-        }
-
-        public void SetCalorieData(int goalCalories, int consumedToday)
-        {
-            int remaining = goalCalories - consumedToday;
-            bool over = consumedToday > goalCalories;
-
-            CalGoalText.Text = goalCalories.ToString();
-            CalConsumedText.Text = consumedToday.ToString();
-            CalRemainingText.Text = Math.Abs(remaining).ToString();
-            CalProgressLabel.Text = over
-                ? $"{consumedToday - goalCalories} kcal over goal"
-                : $"{(int)(Math.Min(1.0, goalCalories > 0 ? (double)consumedToday / goalCalories : 0) * 100)}% of goal";
-
-            var fillColor = over
-                ? new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44))
-                : new SolidColorBrush(Color.FromRgb(0x6D, 0x4A, 0xFF));
-            DashCalorieFill.Background = fillColor;
-            CalRemainingText.Foreground = over
-                ? new SolidColorBrush(Color.FromRgb(0xEF, 0x44, 0x44))
-                : (Brush)new SolidColorBrush(Color.FromRgb(0x20, 0x26, 0x37));
-
-            double pct = goalCalories > 0 ? Math.Min(1.0, (double)consumedToday / goalCalories) : 0;
-            Dispatcher.BeginInvoke(DispatcherPriority.Loaded, () =>
-            {
-                double containerWidth = DashCalorieFill.Parent is Grid g ? g.ActualWidth : 200;
-                DashCalorieFill.Width = containerWidth * pct;
-            });
         }
 
         public void RefreshStats()
@@ -95,9 +79,129 @@ namespace Project_5010.Views
                 .ToString(CultureInfo.InvariantCulture);
             WeeklyMinutesText.Text = thisWeek.Sum(GetWorkoutMinutes).ToString(CultureInfo.InvariantCulture) + " min this week";
 
+            // Calculate streak
+            StreakText.Text = CalculateStreak(allWorkouts).ToString(CultureInfo.InvariantCulture);
+
             PopulateActivityChart(allWorkouts);
             PopulateTypeBreakdown(allWorkouts);
             PopulateHighlights(allWorkouts, thisWeek);
+            PopulateMacroBars();
+        }
+
+        // Counts consecutive days (ending today or yesterday) with at least one workout
+        private static int CalculateStreak(List<object> allWorkouts)
+        {
+            if (allWorkouts.Count == 0) return 0;
+
+            var datesWithWorkouts = allWorkouts
+                .Select(w => GetWorkoutDate(w).Date)
+                .Distinct()
+                .OrderByDescending(d => d)
+                .ToList();
+
+            // Start from today or yesterday (if nothing logged today yet)
+            DateTime checkDate = DateTime.Today;
+            if (!datesWithWorkouts.Contains(checkDate))
+            {
+                checkDate = checkDate.AddDays(-1);
+                if (!datesWithWorkouts.Contains(checkDate))
+                    return 0;
+            }
+
+            int streak = 0;
+            while (datesWithWorkouts.Contains(checkDate))
+            {
+                streak++;
+                checkDate = checkDate.AddDays(-1);
+            }
+            return streak;
+        }
+
+        // Shows today's macro intake as progress bars
+        private void PopulateMacroBars()
+        {
+            if (_foodService == null) return;
+
+            var todayFood = _foodService.Load().Where(f => f.Date.Date == DateTime.Today).ToList();
+            int consumedProtein = todayFood.Sum(f => f.Protein);
+            int consumedCarbs = todayFood.Sum(f => f.Carbs);
+            int consumedFat = todayFood.Sum(f => f.Fat);
+
+            // Calculate targets from calorie goal:
+            // Protein = 25% of goal / 4 cal per gram
+            // Carbs = 50% of goal / 4 cal per gram
+            // Fat = 25% of goal / 9 cal per gram
+            int goalCal = CalorieCalculator.CalculateDailyGoal(
+                _settings.WeightKg, _settings.HeightCm, _settings.Age,
+                _settings.Sex, _settings.ActivityLevel, _settings.GoalType);
+
+            int targetProtein = goalCal > 0 ? (int)(goalCal * 0.25 / 4.0) : 50;
+            int targetCarbs = goalCal > 0 ? (int)(goalCal * 0.50 / 4.0) : 250;
+            int targetFat = goalCal > 0 ? (int)(goalCal * 0.25 / 9.0) : 55;
+
+            ProteinLabel.Text = $"{consumedProtein}g / {targetProtein}g";
+            CarbsLabel.Text = $"{consumedCarbs}g / {targetCarbs}g";
+            FatLabel.Text = $"{consumedFat}g / {targetFat}g";
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, new Action(() =>
+            {
+                SetMacroBar(ProteinFill, consumedProtein, targetProtein);
+                SetMacroBar(CarbsFill, consumedCarbs, targetCarbs);
+                SetMacroBar(FatFill, consumedFat, targetFat);
+            }));
+        }
+
+        private static void SetMacroBar(System.Windows.Controls.Border fill, int consumed, int target)
+        {
+            if (fill.Parent is not System.Windows.Controls.Border track) return;
+            double trackWidth = track.ActualWidth;
+            double pct = target > 0 ? Math.Min(1.0, (double)consumed / target) : 0;
+            fill.Width = trackWidth * pct;
+        }
+
+        public void SetCalorieData(int goalCalories, int consumedToday)
+        {
+            if (goalCalories <= 0)
+            {
+                CalGoalText.Text = "\u2014";
+                CalConsumedText.Text = consumedToday.ToString();
+                CalRemainingText.Text = "\u2014";
+                CalProgressLabel.Text = "Set up profile in Settings";
+                DashCalorieFill.Width = 0;
+                return;
+            }
+
+            int remaining = goalCalories - consumedToday;
+            CalGoalText.Text = goalCalories.ToString();
+            CalConsumedText.Text = consumedToday.ToString();
+
+            if (consumedToday > goalCalories)
+            {
+                CalRemainingText.Text = (consumedToday - goalCalories).ToString();
+                CalRemainingLabel.Text = "kcal over";
+                CalRemainingText.Foreground = (Brush)FindResource("DangerColor");
+                DashCalorieFill.Background = (Brush)FindResource("DangerColor");
+                CalProgressLabel.Text = $"Over by {consumedToday - goalCalories} kcal today";
+                CalProgressLabel.Foreground = (Brush)FindResource("DangerColor");
+            }
+            else
+            {
+                CalRemainingText.Text = remaining.ToString();
+                CalRemainingLabel.Text = "kcal left";
+                CalRemainingText.Foreground = (Brush)FindResource("SuccessColor");
+                DashCalorieFill.Background = (Brush)FindResource("AppAccent");
+                CalProgressLabel.Text = consumedToday == 0
+                    ? "Log food in Goals to track"
+                    : $"{remaining} kcal remaining";
+                CalProgressLabel.Foreground = (Brush)FindResource("TextMuted");
+            }
+
+            Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Loaded, new Action(() =>
+            {
+                double trackWidth = ((System.Windows.Controls.Border)DashCalorieFill.Parent).ActualWidth;
+                double percent = goalCalories > 0 ? Math.Min(1.0, (double)consumedToday / goalCalories) : 0;
+                DashCalorieFill.Width = trackWidth * percent;
+            }));
         }
 
         private void PopulateActivityChart(List<object> allWorkouts)
@@ -125,7 +229,7 @@ namespace Project_5010.Views
 
             foreach (DailyActivityPoint point in points)
             {
-                point.BarHeight = 18 + ((double)point.Minutes / maxMinutes) * 160;
+                point.BarHeight = point.Minutes == 0 ? 4 : 14 + ((double)point.Minutes / maxMinutes) * 160;
                 point.MinutesLabel = point.Minutes + "m";
                 _activityPoints.Add(point);
             }

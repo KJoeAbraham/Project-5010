@@ -1,11 +1,14 @@
-﻿<Window x:Class="Project_5010.LoginWindow"
+<Window x:Class="Project_5010.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Momentum - Login" Height="420" Width="420"
-        WindowStartupLocation="CenterScreen">
+        Title="Momentum - Login" Height="460" Width="420"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{DynamicResource ShellBg}">
 
-    <Grid Margin="24">
+    <Grid Margin="36,32,36,32">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -13,30 +16,81 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Momentum"
-                   FontSize="30"
-                   FontWeight="Bold"
-                   Margin="0,0,0,18"/>
-
-        <StackPanel Grid.Row="1" Margin="0,0,0,12">
-            <TextBlock Text="Username"/>
-            <TextBox x:Name="UsernameTextBox" Height="32" Margin="0,6,0,0"/>
+        <!-- Logo + Title -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,24">
+            <Border Width="44" Height="44" CornerRadius="14" Background="#6D4AFF">
+                <TextBlock Text="&#x2726;" Foreground="White" FontSize="20"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <TextBlock Text="Momentum" FontSize="28" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimary}"
+                       Margin="12,0,0,0" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <StackPanel Grid.Row="2" Margin="0,0,0,12">
-            <TextBlock Text="Password"/>
-            <PasswordBox x:Name="PasswordBox" Height="32" Margin="0,6,0,0"/>
+        <!-- Username -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,14">
+            <TextBlock Text="Username" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}"
+                    BorderThickness="1" CornerRadius="12" Height="42">
+                <TextBox x:Name="UsernameTextBox" Background="Transparent"
+                         Foreground="{DynamicResource InputText}"
+                         BorderThickness="0" Padding="12,0" FontSize="14"
+                         VerticalContentAlignment="Center"/>
+            </Border>
         </StackPanel>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,6,0,12">
-            <Button Content="Login" Width="120" Height="36" Margin="0,0,10,0"
-                    Click="Login_Click"/>
-            <Button Content="Register" Width="120" Height="36"
-                    Click="Register_Click"/>
+        <!-- Password -->
+        <StackPanel Grid.Row="2" Margin="0,0,0,20">
+            <TextBlock Text="Password" FontSize="13" FontWeight="SemiBold"
+                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}"
+                    BorderThickness="1" CornerRadius="12" Height="42">
+                <PasswordBox x:Name="PasswordBox" Background="Transparent"
+                             Foreground="{DynamicResource InputText}"
+                             BorderThickness="0" Padding="12,0" FontSize="14"
+                             VerticalContentAlignment="Center"/>
+            </Border>
         </StackPanel>
 
-        <TextBlock Grid.Row="4" x:Name="StatusText"
-                   Foreground="Gray"
-                   TextWrapping="Wrap"/>
+        <!-- Buttons -->
+        <Grid Grid.Row="3" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Login" Height="44" Cursor="Hand"
+                    Background="#6D4AFF" Foreground="White" FontSize="14"
+                    FontWeight="SemiBold" BorderThickness="0" Click="Login_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="12">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+            <Button Grid.Column="2" Content="Register" Height="44" Cursor="Hand"
+                    Background="{DynamicResource InputBg}" Foreground="{DynamicResource TextPrimary}"
+                    FontSize="14" FontWeight="SemiBold" BorderThickness="1"
+                    BorderBrush="{DynamicResource BorderSoft}" Click="Register_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </Grid>
+
+        <!-- Status -->
+        <TextBlock Grid.Row="5" x:Name="StatusText"
+                   Foreground="{DynamicResource DangerColor}"
+                   FontSize="13" TextWrapping="Wrap"/>
     </Grid>
 </Window>

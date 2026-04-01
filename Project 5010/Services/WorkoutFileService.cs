@@ -1,3 +1,7 @@
+// WorkoutFileService.cs
+// Handles saving and loading workout history to/from workouts.json.
+// Each user has their own workout file in their profile folder.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,10 +41,10 @@ namespace Project_5010.Services
         private static string SanitizeName(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return "default";
-            string sanitized = name.Trim();
+            string s = name.Trim();
             foreach (char c in Path.GetInvalidFileNameChars())
-                sanitized = sanitized.Replace(c.ToString(), string.Empty);
-            return string.IsNullOrWhiteSpace(sanitized) ? "default" : sanitized;
+                s = s.Replace(c.ToString(), string.Empty);
+            return string.IsNullOrWhiteSpace(s) ? "default" : s;
         }
     }
 }

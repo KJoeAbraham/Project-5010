@@ -1,0 +1,199 @@
+<Window x:Class="Project_5010.OnboardingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Momentum - Setup"
+        Width="520" Height="720"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{DynamicResource ShellBg}">
+
+    <Window.Resources>
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{DynamicResource InputText}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBg}"/>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36,28,36,28">
+
+            <!-- Header -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                <Border Width="44" Height="44" CornerRadius="14" Background="#6D4AFF">
+                    <TextBlock Text="&#x2726;" Foreground="White" FontSize="20"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="Momentum" FontSize="26" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimary}" Margin="12,0,0,0" VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <TextBlock Text="Welcome! Let's set up your profile."
+                       FontSize="15" Foreground="{DynamicResource TextSecondary}" Margin="0,4,0,24"/>
+
+            <!-- Profile Card -->
+            <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                    CornerRadius="20" Padding="24" Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="About You" FontSize="18" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,16"/>
+
+                    <!-- Display Name -->
+                    <TextBlock Text="Display Name" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                    <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                            CornerRadius="12" Height="42" Margin="0,0,0,14">
+                        <TextBox x:Name="NameBox" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                 BorderThickness="0" Padding="12,0" FontSize="14"
+                                 VerticalContentAlignment="Center"/>
+                    </Border>
+
+                    <!-- Height + Weight -->
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Height (cm)" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <TextBox x:Name="HeightBox" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                         BorderThickness="0" Padding="12,0" FontSize="14" VerticalContentAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Weight (kg)" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <TextBox x:Name="WeightBox" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                         BorderThickness="0" Padding="12,0" FontSize="14" VerticalContentAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Age + Sex -->
+                    <Grid Margin="0,0,0,14">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Age" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <TextBox x:Name="AgeBox" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                         BorderThickness="0" Padding="12,0" FontSize="14" VerticalContentAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Sex" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <ComboBox x:Name="SexCombo" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                          BorderThickness="0" FontSize="14" Padding="8,0"
+                                          VerticalContentAlignment="Center" SelectedIndex="0">
+                                    <ComboBoxItem Content="Male"/>
+                                    <ComboBoxItem Content="Female"/>
+                                </ComboBox>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Activity Level -->
+                    <TextBlock Text="Activity Level" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                    <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                            CornerRadius="12" Height="42" Margin="0,0,0,14">
+                        <ComboBox x:Name="ActivityCombo" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                  BorderThickness="0" FontSize="14" Padding="8,0"
+                                  VerticalContentAlignment="Center" SelectedIndex="2">
+                            <ComboBoxItem Content="Sedentary"/>
+                            <ComboBoxItem Content="Light"/>
+                            <ComboBoxItem Content="Moderate"/>
+                            <ComboBoxItem Content="Active"/>
+                            <ComboBoxItem Content="Very Active"/>
+                        </ComboBox>
+                    </Border>
+
+                    <!-- Goal -->
+                    <TextBlock Text="Your Goal" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                    <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                            CornerRadius="12" Height="42" Margin="0,0,0,14">
+                        <ComboBox x:Name="GoalCombo" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                  BorderThickness="0" FontSize="14" Padding="8,0"
+                                  VerticalContentAlignment="Center" SelectedIndex="1">
+                            <ComboBoxItem Content="Lose Weight"/>
+                            <ComboBoxItem Content="Maintain"/>
+                            <ComboBoxItem Content="Gain Weight"/>
+                            <ComboBoxItem Content="Improve Fitness"/>
+                        </ComboBox>
+                    </Border>
+
+                    <!-- Workouts per week + Experience -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Workouts per Week" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <ComboBox x:Name="WorkoutsCombo" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                          BorderThickness="0" FontSize="14" Padding="8,0"
+                                          VerticalContentAlignment="Center" SelectedIndex="2">
+                                    <ComboBoxItem Content="1"/>
+                                    <ComboBoxItem Content="2"/>
+                                    <ComboBoxItem Content="3"/>
+                                    <ComboBoxItem Content="4"/>
+                                    <ComboBoxItem Content="5"/>
+                                    <ComboBoxItem Content="6"/>
+                                    <ComboBoxItem Content="7"/>
+                                </ComboBox>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Worked Out Before?" FontSize="13" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,6"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                                    CornerRadius="12" Height="42">
+                                <ComboBox x:Name="ExperienceCombo" Background="Transparent" Foreground="{DynamicResource InputText}"
+                                          BorderThickness="0" FontSize="14" Padding="8,0"
+                                          VerticalContentAlignment="Center" SelectedIndex="0">
+                                    <ComboBoxItem Content="Yes"/>
+                                    <ComboBoxItem Content="No"/>
+                                </ComboBox>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Status message -->
+            <TextBlock x:Name="StatusText" FontSize="13" Foreground="{DynamicResource DangerColor}"
+                       TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+            <!-- Get Started button -->
+            <Button Content="Get Started" Height="48" Cursor="Hand"
+                    Background="#6D4AFF" Foreground="White" FontSize="15"
+                    FontWeight="SemiBold" BorderThickness="0" Click="GetStarted_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="16">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </ScrollViewer>
+</Window>

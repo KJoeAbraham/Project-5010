@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Goal.cs
+// Represents a fitness goal the user is working towards
+// (e.g. "Run 100 minutes this week" or "Do 4 workouts this week").
+
+using System;
 
 namespace Project_5010.Models
 {

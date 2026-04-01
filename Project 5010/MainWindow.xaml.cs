@@ -1,9 +1,11 @@
+// MainWindow.cs
+// This is the main shell of the app. It contains the sidebar navigation,
+// the header bar, and a content area where different views (pages) are shown.
+// It also loads the user's settings and workouts on startup.
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,27 +21,45 @@ namespace Project_5010
         private readonly SettingsFileService _settingsService;
         private UserSettings _settings;
         private readonly WorkoutFileService _workoutFileService;
-        private readonly FoodFileService _foodFileService;
         private readonly ObservableCollection<Workout> _workouts;
 
+        // View instances — we keep them alive so navigation is fast
         private DashboardView? _dashboardView;
         private UserControl? _workoutsView;
         private UserControl? _libraryView;
         private SettingsView? _settingsView;
-        private GoalsView? _goalsView;
+        private readonly FoodFileService _foodFileService;
+        private UserControl? _goalsView;
 
+        // Motivational quotes shown in the sidebar.
+        // A different one is picked each day based on the day of the year.
         private static readonly string[] DailyJokes =
         {
-            "Why did the gym close down? It just didn't work out.",
-            "I told my trainer I wanted to lose weight — he handed me dumbbells. Still not sure that was a compliment.",
-            "Running late counts as cardio, right?",
-            "Rest day: because even legends need to binge-watch something.",
-            "I do leg day so that I can skip leg day next week.",
-            "My protein shake has more personality than most people I know.",
-            "The only bad workout is the one that didn't happen. Unless it's Monday."
+            "Rest day. Even champions need a Sunday. Your gains aren't going anywhere.",
+            "New week, new PRs. Mondays hit different when you actually show up.",
+            "Two days in. The people who quit? They're watching Netflix. You're here.",
+            "Midweek grind. The bar doesn't care what day it is — neither should you.",
+            "Thursday. The unsung hero of the gym week. Almost there, don't fold.",
+            "Friday lifts hit different. End the week the same way you started: strong.",
+            "Saturday gainz. The gym is half empty. The weights are full of potential.",
+            "Discipline beats motivation every time. Show up even when you don't feel like it.",
+            "You don't have to be extreme, just consistent.",
+            "The only bad workout is the one that didn't happen.",
+            "Small progress is still progress. Trust the process.",
+            "Your future self will thank you for showing up today.",
+            "Results happen over time, not overnight. Work hard, stay consistent, and be patient.",
+            "The pain you feel today will be the strength you feel tomorrow.",
+            "Don't count the days. Make the days count.",
+            "Wake up with determination. Go to bed with satisfaction.",
+            "Push yourself because no one else is going to do it for you.",
+            "Success isn't always about greatness. It's about consistency.",
+            "It never gets easier. You just get stronger.",
+            "One workout at a time. One meal at a time. One day at a time.",
         };
 
-        public MainWindow() : this(null) { }
+        public MainWindow() : this(null)
+        {
+        }
 
         public MainWindow(string? username)
         {
@@ -47,6 +67,7 @@ namespace Project_5010
 
             _username = string.IsNullOrWhiteSpace(username) ? "default" : username.Trim();
 
+            // Load the user's saved settings (profile, goals, theme, etc.)
             _settingsService = new SettingsFileService();
             _settings = _settingsService.Load(_username);
 
@@ -57,15 +78,25 @@ namespace Project_5010
                 _settingsService.Save(_settings, _username);
             }
 
+            // Load workout history and food service
             _workoutFileService = new WorkoutFileService(_username);
-            _foodFileService = new FoodFileService(_username);
             _workouts = new ObservableCollection<Workout>(_workoutFileService.LoadWorkouts());
+            _foodFileService = new FoodFileService(_username);
 
-            ShellJokeText.Text = DailyJokes[(int)DateTime.Today.DayOfWeek];
+            // Apply the user's saved theme (Light or Dark)
+            ThemeManager.ApplyTheme(_settings.ThemePreference);
 
             UpdateHeader();
+
+            // Pick a motivational quote based on the day of the year
+            // so users see a different one each day
+            ShellJokeText.Text = DailyJokes[DateTime.Today.DayOfYear % DailyJokes.Length];
+
             NavigateDashboard();
         }
+
+        // --- Navigation click handlers ---
+        // Each button in the sidebar calls one of these to switch the view
 
         private void Logout()
         {
@@ -93,42 +124,41 @@ namespace Project_5010
                 WorkoutsNavButton);
         }
 
+        private void CaloriesNavButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_goalsView == null)
+            {
+                _goalsView = new GoalsView(_settings, _foodFileService);
+            }
+            else
+            {
+                (_goalsView as GoalsView)?.RefreshFood();
+            }
+
+            ShowView(
+                _goalsView,
+                "Calories",
+                "Daily calorie target and nutrition tracking.",
+                CaloriesNavButton);
+        }
+
         private void LibraryNavButton_Click(object sender, RoutedEventArgs e)
         {
             if (_libraryView == null)
             {
-                _libraryView = TryCreateExternalView(
-                    "LibraryView",
-                    _settings,
-                    _settingsService,
-                    _workouts,
-                    _workoutFileService)
-                    ?? BuildPlaceholderView(
-                        "LibraryView not found",
-                        "This shell is ready to push split settings into LibraryView.");
+                // Create the library view directly with settings and services
+                _libraryView = new LibraryView(_settings, _settingsService, _workouts, _workoutFileService);
             }
 
-            ApplySettingsToLibrary(_libraryView);
+            // Push latest settings into the library view
+            if (_libraryView is LibraryView lv)
+                lv.ApplyUserSettings(_settings);
 
             ShowView(
                 _libraryView,
                 "Library",
                 "Exercise tabs can adapt to the split selected in Settings.",
                 LibraryNavButton);
-        }
-
-        private void GoalsNavButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (_goalsView == null)
-            {
-                _goalsView = new GoalsView(_settings, _foodFileService);
-            }
-
-            ShowView(
-                _goalsView,
-                "Goals",
-                "Track daily calories and nutrition to support your training.",
-                GoalsNavButton);
         }
 
         private void SettingsNavButton_Click(object sender, RoutedEventArgs e)
@@ -149,19 +179,21 @@ namespace Project_5010
                 SettingsNavButton);
         }
 
+        // Creates or refreshes the dashboard view
         private void NavigateDashboard()
         {
             if (_dashboardView == null)
             {
                 _dashboardView = new DashboardView(_workouts, _settings);
+                _dashboardView.SetFoodService(_foodFileService);
+                RefreshDashboardCalories();
             }
             else
             {
                 _dashboardView.ApplySettings(_settings);
                 _dashboardView.RefreshStats();
+                RefreshDashboardCalories();
             }
-
-            RefreshDashboardCalories();
 
             ShowView(
                 _dashboardView,
@@ -170,34 +202,44 @@ namespace Project_5010
                 DashboardNavButton);
         }
 
+        // Called when the user saves settings — updates everything
         private void SettingsView_SettingsSaved(UserSettings savedSettings)
         {
             _settings = savedSettings;
             UpdateHeader();
-            ApplySettingsToLibrary(_libraryView);
+
+            // Push updated settings to library if it's loaded
+            if (_libraryView is LibraryView lv)
+                lv.ApplyUserSettings(_settings);
+
+            // Apply the theme change immediately
+            ThemeManager.ApplyTheme(_settings.ThemePreference);
 
             if (_dashboardView != null)
             {
                 _dashboardView.ApplySettings(_settings);
                 _dashboardView.RefreshStats();
-                RefreshDashboardCalories();
             }
 
-            _goalsView?.ApplySettings(_settings);
+            RefreshDashboardCalories();
         }
 
+        // Calculates the calorie goal and updates the dashboard display
         private void RefreshDashboardCalories()
         {
             if (_dashboardView == null) return;
-
             int goal = CalorieCalculator.CalculateDailyGoal(
                 _settings.WeightKg, _settings.HeightCm, _settings.Age,
                 _settings.Sex, _settings.ActivityLevel, _settings.GoalType);
 
-            int consumed = _foodFileService.LoadForDate(DateTime.Today).Sum(e => e.Calories);
-            _dashboardView.SetCalorieData(goal, consumed);
+            var todayFood = _foodFileService.Load()
+                .Where(f => f.Date.Date == DateTime.Today)
+                .Sum(f => f.Calories);
+
+            _dashboardView.SetCalorieData(goal, todayFood);
         }
 
+        // Switches the main content area to show a different view
         private void ShowView(UserControl view, string pageTitle, string pageSubtitle, Button activeButton)
         {
             MainContentHost.Content = view;
@@ -206,6 +248,7 @@ namespace Project_5010
             ApplySelectedNavStyle(activeButton);
         }
 
+        // Highlights the active nav button and resets the others
         private void ApplySelectedNavStyle(Button activeButton)
         {
             Button[] buttons =
@@ -213,7 +256,7 @@ namespace Project_5010
                 DashboardNavButton,
                 WorkoutsNavButton,
                 LibraryNavButton,
-                GoalsNavButton,
+                CaloriesNavButton,
                 SettingsNavButton
             };
 
@@ -221,14 +264,16 @@ namespace Project_5010
             {
                 button.Background = Brushes.Transparent;
                 button.BorderBrush = Brushes.Transparent;
-                button.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#525A73"));
+                button.Foreground = (Brush)FindResource("TextSecondary");
             }
 
-            activeButton.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F0EBFF"));
-            activeButton.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DCCFFF"));
-            activeButton.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6D4AFF"));
+            // Active button gets a highlighted style using theme-aware resources
+            activeButton.Background = (Brush)FindResource("NavActiveBg");
+            activeButton.BorderBrush = (Brush)FindResource("NavActiveBorder");
+            activeButton.Foreground = (Brush)FindResource("AppAccent");
         }
 
+        // Updates the header bar with the user's name and split
         private void UpdateHeader()
         {
             string displayName = string.IsNullOrWhiteSpace(_settings.DisplayName) ? "Athlete" : _settings.DisplayName;
@@ -239,136 +284,25 @@ namespace Project_5010
             BrandSubtitleText.Text = "Hello, " + displayName;
         }
 
-        private void ApplySettingsToLibrary(UserControl? view)
-        {
-            if (view == null) return;
-            InvokeIfPresent(view, "ApplyUserSettings", _settings);
-            InvokeIfPresent(view, "ApplySettings", _settings);
-            InvokeIfPresent(view, "ConfigureTabsForSplit", _settings.SplitPlanId);
-            InvokeIfPresent(view, "ApplySplitSelection", _settings.SplitPlanId);
-            InvokeIfPresent(view, "RefreshForSettings", _settings);
-        }
 
-        private static UserControl? TryCreateExternalView(string shortTypeName, params object?[] preferredArguments)
-        {
-            Type? viewType = FindTypeByShortName(shortTypeName);
-            if (viewType == null || !typeof(UserControl).IsAssignableFrom(viewType)) return null;
-
-            List<object?[]> attempts = new List<object?[]>();
-            object?[] full = preferredArguments.Where(a => a != null).ToArray();
-            if (full.Length > 0) attempts.Add(full);
-            foreach (object? argument in preferredArguments)
-                if (argument != null) attempts.Add(new[] { argument });
-            attempts.Add(Array.Empty<object?>());
-
-            foreach (ConstructorInfo constructor in viewType.GetConstructors().OrderByDescending(c => c.GetParameters().Length))
-            {
-                foreach (object?[] attempt in attempts)
-                {
-                    ParameterInfo[] parameters = constructor.GetParameters();
-                    if (parameters.Length != attempt.Length) continue;
-
-                    bool valid = true;
-                    for (int i = 0; i < parameters.Length; i++)
-                    {
-                        object? suppliedValue = attempt[i];
-                        if (suppliedValue == null)
-                        {
-                            if (parameters[i].ParameterType.IsValueType) { valid = false; break; }
-                            continue;
-                        }
-                        if (!parameters[i].ParameterType.IsInstanceOfType(suppliedValue)) { valid = false; break; }
-                    }
-
-                    if (!valid) continue;
-                    try { return (UserControl)constructor.Invoke(attempt); }
-                    catch { }
-                }
-            }
-
-            return null;
-        }
-
-        private static Type? FindTypeByShortName(string shortTypeName)
-        {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                Type[] types;
-                try { types = assembly.GetTypes(); }
-                catch (ReflectionTypeLoadException ex) { types = ex.Types.Where(t => t != null).Cast<Type>().ToArray(); }
-
-                Type? found = types.FirstOrDefault(t => t.Name.Equals(shortTypeName, StringComparison.Ordinal));
-                if (found != null) return found;
-            }
-            return null;
-        }
-
-        private static void InvokeIfPresent(object target, string methodName, object? argument)
-        {
-            MethodInfo[] methods = target.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-            foreach (MethodInfo method in methods.Where(m => m.Name.Equals(methodName, StringComparison.Ordinal)))
-            {
-                ParameterInfo[] parameters = method.GetParameters();
-                if (parameters.Length != 1) continue;
-                if (argument == null)
-                {
-                    if (parameters[0].ParameterType.IsValueType) continue;
-                }
-                else if (!parameters[0].ParameterType.IsInstanceOfType(argument)) continue;
-
-                try { method.Invoke(target, new[] { argument }); return; }
-                catch { }
-            }
-        }
-
+        // Converts split ID to a display name (e.g. "UpperLower" -> "Upper / Lower")
         private static string ToPrettySplit(string rawSplit)
         {
             if (string.IsNullOrWhiteSpace(rawSplit)) return "PPL";
+
             string value = rawSplit.Trim().Replace("_", " ").Replace("-", " ");
-            return value.ToLowerInvariant() switch
+            switch (value.ToLowerInvariant())
             {
-                "ppl"          => "PPL",
-                "upper lower"  => "Upper / Lower",
-                "upperlower"   => "Upper / Lower",
-                "full body"    => "Full Body",
-                "fullbody"     => "Full Body",
-                "bro split"    => "Bro Split",
-                "brosplit"     => "Bro Split",
-                _              => value
-            };
+                case "ppl":          return "PPL";
+                case "upper lower":
+                case "upperlower":   return "Upper / Lower";
+                case "full body":
+                case "fullbody":     return "Full Body";
+                case "bro split":
+                case "brosplit":     return "Bro Split";
+                default:             return value;
+            }
         }
 
-        private static UserControl BuildPlaceholderView(string title, string message)
-        {
-            Border card = new Border
-            {
-                Margin = new Thickness(18),
-                Padding = new Thickness(28),
-                Background = Brushes.White,
-                BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E8EAF3")),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(24)
-            };
-
-            StackPanel stack = new StackPanel();
-            stack.Children.Add(new TextBlock
-            {
-                Text = title,
-                FontSize = 24,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1E2435"))
-            });
-            stack.Children.Add(new TextBlock
-            {
-                Text = message,
-                Margin = new Thickness(0, 10, 0, 0),
-                TextWrapping = TextWrapping.Wrap,
-                FontSize = 14,
-                Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#6E7386"))
-            });
-            card.Child = stack;
-
-            return new UserControl { Content = card };
-        }
     }
 }
