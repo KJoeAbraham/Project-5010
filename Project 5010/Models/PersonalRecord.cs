@@ -1,4 +1,8 @@
-﻿using System;
+﻿// PersonalRecord.cs
+// Tracks the user's best performance for a specific exercise.
+// For example: "Bench Press — 80 kg x 5 reps on March 15".
+
+using System;
 
 namespace Project_5010.Models
 {

@@ -1,4 +1,9 @@
-﻿using System.Windows;
+// LoginWindow.cs
+// This is the first window the user sees. They can log in or register.
+// After registering, new users go through an onboarding setup.
+// After logging in, existing users who haven't done onboarding are prompted too.
+
+using System.Windows;
 using Project_5010.Services;
 
 namespace Project_5010
@@ -19,7 +24,10 @@ namespace Project_5010
 
             if (authService.Login(username, password, out string message))
             {
-                // Open main app for this user
+                // Check if the user still needs to do onboarding
+                if (!ShowOnboardingIfNeeded(username))
+                    return; // user closed onboarding without finishing
+
                 var main = new MainWindow(username);
                 main.Show();
                 Close();
@@ -40,9 +48,31 @@ namespace Project_5010
 
             if (ok)
             {
-                // optional: clear password
-                PasswordBox.Clear();
+                // After registering, go straight to onboarding and then the main app
+                if (!ShowOnboardingIfNeeded(username))
+                    return; // user closed onboarding without finishing
+
+                var main = new MainWindow(username);
+                main.Show();
+                Close();
             }
+        }
+
+        // Shows the onboarding window if the user hasn't completed it yet.
+        // Returns true if onboarding is done (or was already done).
+        // Returns false if the user closed the onboarding window without finishing.
+        private static bool ShowOnboardingIfNeeded(string username)
+        {
+            var settingsService = new SettingsFileService();
+            var settings = settingsService.Load(username);
+
+            if (settings.IsOnboardingComplete)
+                return true; // already done, skip it
+
+            var onboarding = new OnboardingWindow(settingsService, username);
+            bool? result = onboarding.ShowDialog();
+
+            return result == true;
         }
     }
 }

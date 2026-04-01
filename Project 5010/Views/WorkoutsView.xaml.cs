@@ -1,3 +1,7 @@
+// WorkoutsView.cs
+// Lets the user log new workouts, view their history, and edit or delete entries.
+// Supports filtering by type (Cardio, Strength, Flexibility) and shows a weekly summary.
+
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -41,12 +45,12 @@ namespace Project_5010.Views
             if (sender is not Button btn) return;
             _activeFilter = btn.Tag?.ToString() ?? "All";
 
-            // Highlight active filter button
+            // Highlight active filter button (uses theme-aware resources)
             var filterBtns = new[] { FilterAllBtn, FilterCardioBtn, FilterStrengthBtn, FilterFlexBtn };
             foreach (var b in filterBtns)
             {
-                b.Background = new SolidColorBrush(Color.FromRgb(0xF3, 0xF4, 0xF6));
-                b.Foreground = new SolidColorBrush(Color.FromRgb(0x6B, 0x72, 0x80));
+                b.Background = (Brush)FindResource("InputBg");
+                b.Foreground = (Brush)FindResource("TextSecondary");
             }
             btn.Background = new SolidColorBrush(Color.FromRgb(0x6D, 0x4A, 0xFF));
             btn.Foreground = Brushes.White;
@@ -190,6 +194,24 @@ namespace Project_5010.Views
             FormTitleText.Text = "Edit Workout";
             DeleteButton.Visibility = Visibility.Visible;
             SetStatus("Editing selected workout...", Colors.CornflowerBlue);
+        }
+
+        // ========== PREVIOUS SESSION HINT ==========
+
+        private void WorkoutTypeCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (LastSessionHint == null || WorkoutTypeCombo.SelectedItem is not ComboBoxItem item) return;
+
+            string selectedType = item.Content?.ToString() ?? "";
+            var lastOfType = workouts
+                .Where(w => w.Type.Equals(selectedType, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(w => w.Date)
+                .FirstOrDefault();
+
+            if (lastOfType != null)
+                LastSessionHint.Text = $"Last session: {lastOfType.DurationMinutes} min \u00b7 {lastOfType.Date:MMM d}";
+            else
+                LastSessionHint.Text = $"No previous {selectedType} sessions.";
         }
 
         // ========== HELPERS ==========

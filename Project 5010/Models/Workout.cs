@@ -1,4 +1,8 @@
-﻿namespace Project_5010.Models
+﻿// Workout.cs
+// Represents a single workout session the user logged.
+// Stores the type (Cardio, Strength, Flexibility), date, duration, and notes.
+
+namespace Project_5010.Models
 {
     public class Workout
     {

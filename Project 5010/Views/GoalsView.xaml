@@ -1,0 +1,307 @@
+<UserControl x:Class="Project_5010.Views.GoalsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <Style TargetType="ComboBoxItem">
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBg}"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="380"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== LEFT: Food Log ===== -->
+        <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                CornerRadius="12" Padding="16" Margin="0,0,16,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,8">
+                    <TextBlock Text="Food Log" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"/>
+                </StackPanel>
+
+                <!-- Date navigation bar -->
+                <Grid Grid.Row="1" Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Content="&#x2039;" FontSize="22" FontWeight="Bold"
+                            Background="Transparent" Foreground="#6D4AFF" BorderThickness="0"
+                            Cursor="Hand" Padding="8,0" Click="PrevDay_Click"/>
+                    <TextBlock x:Name="TodayDateText" Grid.Column="1"
+                               FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimary}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Button x:Name="NextDayBtn" Grid.Column="2" Content="&#x203A;" FontSize="22" FontWeight="Bold"
+                            Background="Transparent" Foreground="#6D4AFF" BorderThickness="0"
+                            Cursor="Hand" Padding="8,0" Click="NextDay_Click"/>
+                </Grid>
+
+                <!-- Food entries grouped by meal type -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl x:Name="GroupedFoodList">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0,0,0,10">
+                                    <!-- Group header -->
+                                    <Border Background="{DynamicResource AccentSoftBg}" CornerRadius="6" Padding="10,6" Margin="0,0,0,4">
+                                        <Grid>
+                                            <TextBlock Text="{Binding MealType}" FontSize="13" FontWeight="Bold" Foreground="#6D4AFF"/>
+                                            <TextBlock Text="{Binding TotalDisplay}" FontSize="13" FontWeight="SemiBold"
+                                                       Foreground="#6D4AFF" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </Border>
+                                    <!-- Items in group -->
+                                    <ItemsControl ItemsSource="{Binding Items}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}"
+                                                        BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,0,3">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13"
+                                                                   Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Calories, StringFormat={}{0} kcal}"
+                                                                   FontSize="13" FontWeight="SemiBold" Foreground="#6D4AFF"
+                                                                   VerticalAlignment="Center" Margin="8,0"/>
+                                                        <Button Grid.Column="2" Content="&#x2715;" Width="22" Height="22"
+                                                                Background="Transparent" Foreground="{DynamicResource TextMuted}"
+                                                                BorderThickness="0" Cursor="Hand" FontSize="10"
+                                                                Tag="{Binding}" Click="DeleteFood_Click"/>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Total bar -->
+                <Border Grid.Row="3" Background="{DynamicResource AccentSoftBg}" BorderBrush="#DDD6FE" BorderThickness="1"
+                        CornerRadius="8" Padding="12,8" Margin="0,12,0,0">
+                    <Grid>
+                        <TextBlock Text="Total consumed" FontSize="13" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="TotalConsumedText" Text="0 kcal"
+                                   FontSize="15" FontWeight="Bold" Foreground="#6D4AFF"
+                                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ===== RIGHT: Summary + Add Food ===== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Calorie Goal Summary Card with circular ring -->
+            <Border Grid.Row="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                    CornerRadius="12" Padding="24" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Daily Calorie Goal" FontSize="12" FontWeight="Bold"
+                               Foreground="#6D4AFF" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="GoalSubtitleText" Text="Based on your profile settings."
+                               FontSize="13" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,16"/>
+
+                    <!-- Circular ring + stat pills side by side -->
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Calorie ring -->
+                        <Grid Grid.Column="0" Width="160" Height="160" Margin="0,0,20,0">
+                            <!-- Background circle (track) -->
+                            <Ellipse Width="160" Height="160" StrokeThickness="12"
+                                     Stroke="{DynamicResource ProgressTrackBg}" Fill="Transparent"/>
+                            <!-- Foreground arc (consumed) -->
+                            <Canvas Width="160" Height="160">
+                                <Path x:Name="CalorieArc" StrokeThickness="12" Fill="Transparent">
+                                    <Path.Stroke>
+                                        <SolidColorBrush Color="#6D4AFF"/>
+                                    </Path.Stroke>
+                                    <Path.Data>
+                                        <PathGeometry>
+                                            <PathFigure x:Name="ArcFigure" StartPoint="80,6">
+                                                <ArcSegment x:Name="ArcSegment" Point="80,6"
+                                                            Size="74,74" SweepDirection="Clockwise"
+                                                            IsLargeArc="False"/>
+                                            </PathFigure>
+                                        </PathGeometry>
+                                    </Path.Data>
+                                </Path>
+                            </Canvas>
+                            <!-- Center text -->
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <TextBlock x:Name="RingConsumedText" Text="0" FontSize="28" FontWeight="Bold"
+                                           Foreground="{DynamicResource TextPrimary}" HorizontalAlignment="Center"/>
+                                <TextBlock Text="kcal" FontSize="12" Foreground="{DynamicResource TextMuted}" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Stat pills stacked vertically -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <Border Background="{DynamicResource AccentSoftBg}" CornerRadius="10" Padding="14,10" Margin="0,0,0,8">
+                                <StackPanel>
+                                    <TextBlock Text="Daily Goal" FontSize="11" Foreground="{DynamicResource TextSecondary}"/>
+                                    <TextBlock x:Name="GoalKcalText" Text="&#x2014;" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="RemainingBorder" Background="{DynamicResource SuccessBg}" CornerRadius="10" Padding="14,10">
+                                <StackPanel>
+                                    <TextBlock x:Name="RemainingLabelText" Text="Remaining" FontSize="11" Foreground="{DynamicResource TextSecondary}"/>
+                                    <TextBlock x:Name="RemainingKcalText" Text="&#x2014;" FontSize="20" FontWeight="Bold" Foreground="{DynamicResource SuccessColor}"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Calorie breakdown explanation -->
+                    <StackPanel x:Name="CalorieBreakdownPanel" Margin="0,0,0,12" Visibility="Collapsed">
+                        <TextBlock x:Name="BmrExplanation" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,3"/>
+                        <TextBlock x:Name="MaintenanceExplanation" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,3"/>
+                        <TextBlock x:Name="GoalExplanation" FontSize="12" Foreground="#6D4AFF" FontWeight="SemiBold"/>
+                    </StackPanel>
+
+                    <!-- Status message -->
+                    <TextBlock x:Name="GoalStatusText" FontSize="13" FontWeight="SemiBold"
+                               Foreground="{DynamicResource SuccessColor}" Margin="0,4,0,0"/>
+
+                    <!-- Setup prompt -->
+                    <Border x:Name="SetupPromptBorder" Background="{DynamicResource WarningBg}" BorderBrush="#FDE68A"
+                            BorderThickness="1" CornerRadius="8" Padding="12,8" Margin="0,12,0,0"
+                            Visibility="Collapsed">
+                        <TextBlock Text="Set your Age, Sex, Activity Level, and Goal in Settings to calculate your personal calorie target."
+                                   FontSize="12" Foreground="{DynamicResource WarningText}" TextWrapping="Wrap"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- Add Food Card -->
+            <Border Grid.Row="1" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
+                    CornerRadius="12" Padding="24">
+                <StackPanel>
+                    <TextBlock Text="Log Food" FontSize="16" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,4"/>
+                    <TextBlock Text="Manually enter what you ate." FontSize="13" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,12"/>
+
+                    <!-- Row 1: Name + Calories -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Food name" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <TextBox x:Name="FoodNameBox" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                         BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Calories" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <TextBox x:Name="FoodCaloriesBox" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                         BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 2: Protein + Carbs + Fat -->
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Protein (g)" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <TextBox x:Name="FoodProteinBox" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                         BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Carbs (g)" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <TextBox x:Name="FoodCarbsBox" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                         BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Fat (g)" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <TextBox x:Name="FoodFatBox" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                         BorderThickness="0" Padding="10,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Row 3: Meal + Add button -->
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Meal" FontSize="12" Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="8" Height="36">
+                                <ComboBox x:Name="MealTypeCombo" Background="Transparent" Foreground="{DynamicResource TextPrimary}"
+                                          BorderThickness="0" FontSize="13" Padding="8,0"
+                                          VerticalContentAlignment="Center" SelectedIndex="0">
+                                    <ComboBoxItem Content="Breakfast"/>
+                                    <ComboBoxItem Content="Lunch"/>
+                                    <ComboBoxItem Content="Dinner"/>
+                                    <ComboBoxItem Content="Snack"/>
+                                </ComboBox>
+                            </Border>
+                        </StackPanel>
+                        <Button Grid.Column="2" x:Name="AddFoodButton" Content="Add to Log"
+                                Height="36" Padding="20,0" Background="#6D4AFF" Foreground="White"
+                                FontWeight="SemiBold" FontSize="13" BorderThickness="0" Cursor="Hand"
+                                VerticalAlignment="Bottom" Click="AddFood_Click">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+
+                    <TextBlock x:Name="AddFoodStatusText" FontSize="12" FontWeight="SemiBold"
+                               Foreground="#10B981" Visibility="Collapsed"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

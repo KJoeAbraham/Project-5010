@@ -1,6 +1,6 @@
-// WorkoutFileService.cs
-// Handles saving and loading workout history to/from workouts.json.
-// Each user has their own workout file in their profile folder.
+// FoodFileService.cs
+// Handles saving and loading food entries to/from food.json.
+// Each user has their own food log stored in their profile folder.
 
 using System;
 using System.Collections.Generic;
@@ -10,32 +10,35 @@ using Project_5010.Models;
 
 namespace Project_5010.Services
 {
-    public class WorkoutFileService
+    public class FoodFileService
     {
         private readonly string filePath;
 
-        public WorkoutFileService(string username = "default")
+        public FoodFileService(string username = "default")
         {
             string sanitized = SanitizeName(username);
             string dataFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Momentum", "Profiles", sanitized);
             Directory.CreateDirectory(dataFolder);
-            filePath = Path.Combine(dataFolder, "workouts.json");
+            filePath = Path.Combine(dataFolder, "food.json");
         }
 
-        public List<Workout> LoadWorkouts()
+        public List<FoodEntry> Load()
         {
-            if (!File.Exists(filePath)) return new List<Workout>();
-            string json = File.ReadAllText(filePath);
-            if (string.IsNullOrWhiteSpace(json)) return new List<Workout>();
-            return JsonSerializer.Deserialize<List<Workout>>(json) ?? new List<Workout>();
+            if (!File.Exists(filePath)) return new List<FoodEntry>();
+            try
+            {
+                string json = File.ReadAllText(filePath);
+                return JsonSerializer.Deserialize<List<FoodEntry>>(json) ?? new List<FoodEntry>();
+            }
+            catch { return new List<FoodEntry>(); }
         }
 
-        public void SaveWorkouts(List<Workout> workouts)
+        public void Save(List<FoodEntry> entries)
         {
-            var options = new JsonSerializerOptions { WriteIndented = true };
-            File.WriteAllText(filePath, JsonSerializer.Serialize(workouts, options));
+            var opts = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(filePath, JsonSerializer.Serialize(entries, opts));
         }
 
         private static string SanitizeName(string name)

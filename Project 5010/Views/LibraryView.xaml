@@ -5,10 +5,9 @@
              Background="Transparent">
 
     <UserControl.Resources>
-        <!-- Override global near-white foreground so ComboBox dropdowns are readable -->
         <Style TargetType="ComboBoxItem">
-            <Setter Property="Foreground" Value="#111827"/>
-            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+            <Setter Property="Background" Value="{DynamicResource CardBg}"/>
         </Style>
     </UserControl.Resources>
 
@@ -19,7 +18,7 @@
         </Grid.ColumnDefinitions>
 
         <!-- ========== LEFT: Exercise List Panel ========== -->
-        <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E5E7EB" BorderThickness="1"
+        <Border Grid.Column="0" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                 CornerRadius="12" Padding="12" Margin="0,0,16,0">
             <Grid>
                 <Grid.RowDefinitions>
@@ -29,10 +28,9 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Title + Custom Exercise -->
                 <Grid Grid.Row="0" Margin="0,0,0,12">
                     <TextBlock Text="Library" FontSize="20" FontWeight="Bold"
-                               Foreground="#111827" VerticalAlignment="Center"/>
+                               Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
                     <TextBlock Text="+ Custom Exercise" Foreground="#9D84FF" FontSize="13"
                                FontWeight="SemiBold" HorizontalAlignment="Right"
                                VerticalAlignment="Center" Cursor="Hand"
@@ -40,18 +38,18 @@
                 </Grid>
 
                 <!-- Suggestion Card -->
-                <Border Grid.Row="1" Background="#F5F3FF" BorderBrush="#6D4AFF" BorderThickness="1"
+                <Border Grid.Row="1" Background="{DynamicResource AccentSoftBg}" BorderBrush="#6D4AFF" BorderThickness="1"
                         CornerRadius="8" Padding="12" Margin="0,0,0,12">
                     <StackPanel>
                         <TextBlock x:Name="SuggestionTitleText" Text="Today's Focus"
                                    FontWeight="Bold" Foreground="#6D4AFF" Margin="0,0,0,2"/>
                         <TextBlock Text="Based on your settings and training split."
-                                   Foreground="#6B7280" FontSize="11" Margin="0,0,0,6"/>
+                                   Foreground="{DynamicResource TextSecondary}" FontSize="11" Margin="0,0,0,6"/>
                         <ItemsControl x:Name="SuggestionItemsControl">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding StringFormat='• {0}'}"
-                                               Foreground="#111827" FontSize="12" Margin="0,1,0,0"/>
+                                               Foreground="{DynamicResource TextPrimary}" FontSize="12" Margin="0,1,0,0"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -59,18 +57,18 @@
                 </Border>
 
                 <!-- Search Box -->
-                <Border Grid.Row="2" Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                <Border Grid.Row="2" Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                         CornerRadius="8" Padding="10,0" Height="36" Margin="0,0,0,12">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="🔍" Foreground="#9CA3AF" VerticalAlignment="Center"
+                        <TextBlock Text="&#x1F50D;" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center"
                                    Margin="0,0,8,0" FontSize="13"/>
                         <TextBox x:Name="SearchTextBox" Grid.Column="1"
                                  TextChanged="SearchTextBox_TextChanged"
-                                 Background="Transparent" Foreground="#111827"
+                                 Background="Transparent" Foreground="{DynamicResource TextPrimary}"
                                  BorderThickness="0" FontSize="13" VerticalAlignment="Center"/>
                     </Grid>
                 </Border>
@@ -90,9 +88,9 @@
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
                                         <Grid Cursor="Hand" Background="Transparent">
-                                            <Border x:Name="HoverOverlay" Background="#F5F3FF"
+                                            <Border x:Name="HoverOverlay" Background="{DynamicResource AccentSoftBg}"
                                                     CornerRadius="6" Opacity="0"/>
-                                            <Border x:Name="SelectedOverlay" Background="#EDE9FE"
+                                            <Border x:Name="SelectedOverlay" Background="{DynamicResource AccentSoftBrush}"
                                                     CornerRadius="6" Opacity="0"/>
                                             <Border Padding="8">
                                                 <ContentPresenter/>
@@ -119,15 +117,15 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <Border Grid.Column="0" Width="36" Height="36" CornerRadius="18"
-                                        Background="#F0EBFF" Margin="0,0,12,0" VerticalAlignment="Center">
-                                    <TextBlock Text="🏋️" FontSize="16" HorizontalAlignment="Center"
+                                        Background="{DynamicResource AccentSoftBrush}" Margin="0,0,12,0" VerticalAlignment="Center">
+                                    <TextBlock Text="&#x1F3CB;&#xFE0F;" FontSize="16" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" Margin="0,0,0,2"/>
                                 </Border>
                                 <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                     <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
-                                               FontSize="14" Foreground="#111827"
+                                               FontSize="14" Foreground="{DynamicResource TextPrimary}"
                                                TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Text="{Binding Muscle}" Foreground="#6B7280"
+                                    <TextBlock Text="{Binding Muscle}" Foreground="{DynamicResource TextSecondary}"
                                                FontSize="12" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
@@ -141,38 +139,38 @@
         <Grid Grid.Column="1" VerticalAlignment="Top">
 
             <!-- Tracker Panel -->
-            <Border x:Name="TrackerPanel" Background="#FFFFFF" BorderBrush="#E5E7EB"
+            <Border x:Name="TrackerPanel" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}"
                     BorderThickness="1" CornerRadius="12" Padding="20" Visibility="Visible">
                 <StackPanel>
                     <TextBlock Text="Exercise Details" FontSize="12" FontWeight="Bold"
-                               Foreground="#6B7280" Margin="0,0,0,4"/>
+                               Foreground="{DynamicResource TextSecondary}" Margin="0,0,0,4"/>
                     <TextBlock x:Name="DetailNameText" Text="Select an exercise..."
-                               FontSize="24" FontWeight="Bold" Foreground="#111827" Margin="0,0,0,12"/>
+                               FontSize="24" FontWeight="Bold" Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,12"/>
 
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
-                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                        <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                                 CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
                             <TextBlock x:Name="DetailEquipText" Text="Equipment: —"
-                                       Foreground="#6B7280" FontSize="12"/>
+                                       Foreground="{DynamicResource TextSecondary}" FontSize="12"/>
                         </Border>
-                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                        <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                                 CornerRadius="6" Padding="8,4" Margin="0,0,8,0">
                             <TextBlock x:Name="DetailPrimaryText" Text="Primary: —"
-                                       Foreground="#6B7280" FontSize="12"/>
+                                       Foreground="{DynamicResource TextSecondary}" FontSize="12"/>
                         </Border>
-                        <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
+                        <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                                 CornerRadius="6" Padding="8,4">
                             <TextBlock x:Name="DetailSecondaryText" Text="Secondary: —"
-                                       Foreground="#6B7280" FontSize="12"/>
+                                       Foreground="{DynamicResource TextSecondary}" FontSize="12"/>
                         </Border>
                     </StackPanel>
 
                     <!-- Log Performance Card -->
-                    <Border Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1"
+                    <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1"
                             CornerRadius="8" Padding="16" Margin="0,0,0,24">
                         <StackPanel>
                             <TextBlock Text="Log Performance" FontWeight="SemiBold"
-                                       Foreground="#111827" FontSize="14" Margin="0,0,0,12"/>
+                                       Foreground="{DynamicResource TextPrimary}" FontSize="14" Margin="0,0,0,12"/>
                             <Grid Margin="0,0,0,12">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -180,32 +178,26 @@
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" Margin="0,0,8,0">
-                                    <TextBlock Text="Weight (lbs/kg)" Foreground="#6B7280"
-                                               FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#FFFFFF" BorderBrush="#E5E7EB"
-                                            BorderThickness="1" CornerRadius="6" Height="32">
+                                    <TextBlock Text="Weight (lbs/kg)" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="32">
                                         <TextBox x:Name="PRWeightTextBox" Background="Transparent"
-                                                 Foreground="#111827" BorderThickness="0"
+                                                 Foreground="{DynamicResource TextPrimary}" BorderThickness="0"
                                                  Padding="8,0" VerticalContentAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="4,0,4,0">
-                                    <TextBlock Text="Reps" Foreground="#6B7280"
-                                               FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#FFFFFF" BorderBrush="#E5E7EB"
-                                            BorderThickness="1" CornerRadius="6" Height="32">
+                                    <TextBlock Text="Reps" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="32">
                                         <TextBox x:Name="PRRepsTextBox" Background="Transparent"
-                                                 Foreground="#111827" BorderThickness="0"
+                                                 Foreground="{DynamicResource TextPrimary}" BorderThickness="0"
                                                  Padding="8,0" VerticalContentAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Margin="8,0,0,0">
-                                    <TextBlock Text="Date" Foreground="#6B7280"
-                                               FontSize="12" Margin="0,0,0,4"/>
-                                    <Border Background="#FFFFFF" BorderBrush="#E5E7EB"
-                                            BorderThickness="1" CornerRadius="6" Height="32">
+                                    <TextBlock Text="Date" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                                    <Border Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="32">
                                         <DatePicker x:Name="PRDatePicker" Background="Transparent"
-                                                    Foreground="#111827" BorderThickness="0"
+                                                    Foreground="{DynamicResource TextPrimary}" BorderThickness="0"
                                                     VerticalContentAlignment="Center"/>
                                     </Border>
                                 </StackPanel>
@@ -228,9 +220,9 @@
                     </Border>
 
                     <TextBlock Text="Trophy Room (History)" FontSize="16" FontWeight="Bold"
-                               Foreground="#111827" Margin="0,0,0,8"/>
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
                     <ListView x:Name="PRListView" SelectionChanged="PRListView_SelectionChanged"
-                              Background="Transparent" BorderThickness="0" Foreground="#111827"
+                              Background="Transparent" BorderThickness="0" Foreground="{DynamicResource TextPrimary}"
                               Height="200" ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <ListView.View>
                             <GridView>
@@ -243,15 +235,24 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
+
+                    <!-- Best Lifts summary -->
+                    <StackPanel x:Name="BestLiftsPanel" Margin="0,16,0,0">
+                        <TextBlock Text="Best Lifts" FontSize="14" FontWeight="Bold"
+                                   Foreground="#6D4AFF" Margin="0,0,0,8"/>
+                        <TextBlock x:Name="BestLiftsContent" FontSize="12"
+                                   Foreground="{DynamicResource TextSecondary}" TextWrapping="Wrap"
+                                   Text="Select an exercise to see your best lifts."/>
+                    </StackPanel>
                 </StackPanel>
             </Border>
 
             <!-- Custom Exercise Panel -->
-            <Border x:Name="CustomExercisePanel" Background="#FFFFFF" BorderBrush="#E5E7EB"
+            <Border x:Name="CustomExercisePanel" Background="{DynamicResource CardBg}" BorderBrush="{DynamicResource BorderSoft}"
                     BorderThickness="1" CornerRadius="12" Padding="24" Visibility="Collapsed">
                 <StackPanel>
                     <TextBlock Text="Create Custom Exercise" FontSize="20" FontWeight="Bold"
-                               Foreground="#111827" Margin="0,0,0,20"/>
+                               Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,20"/>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -261,21 +262,17 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0">
-                            <TextBlock Text="Exercise Name" Foreground="#6B7280"
-                                       FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
-                                    CornerRadius="6" Height="36" Margin="0,0,0,16">
+                            <TextBlock Text="Exercise Name" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="36" Margin="0,0,0,16">
                                 <TextBox x:Name="CustomNameBox" Background="Transparent"
-                                         Foreground="#111827" BorderThickness="0"
+                                         Foreground="{DynamicResource TextPrimary}" BorderThickness="0"
                                          Padding="10,0" VerticalContentAlignment="Center"/>
                             </Border>
 
-                            <TextBlock Text="Exercise Type" Foreground="#6B7280"
-                                       FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
-                                    CornerRadius="6" Height="36" Margin="0,0,0,16">
+                            <TextBlock Text="Exercise Type" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="36" Margin="0,0,0,16">
                                 <ComboBox x:Name="CustomTypeCombo" Background="Transparent"
-                                          Foreground="#111827" BorderThickness="0" FontSize="13"
+                                          Foreground="{DynamicResource TextPrimary}" BorderThickness="0" FontSize="13"
                                           Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
                                     <ComboBoxItem Content="Weight &amp; Reps"/>
                                     <ComboBoxItem Content="Reps Only"/>
@@ -285,12 +282,10 @@
                                 </ComboBox>
                             </Border>
 
-                            <TextBlock Text="Equipment" Foreground="#6B7280"
-                                       FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
-                                    CornerRadius="6" Height="36" Margin="0,0,0,16">
+                            <TextBlock Text="Equipment" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="36" Margin="0,0,0,16">
                                 <ComboBox x:Name="CustomEquipCombo" Background="Transparent"
-                                          Foreground="#111827" BorderThickness="0" FontSize="13"
+                                          Foreground="{DynamicResource TextPrimary}" BorderThickness="0" FontSize="13"
                                           Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
                                     <ComboBoxItem Content="None"/>
                                     <ComboBoxItem Content="Barbell"/>
@@ -303,12 +298,10 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="Primary Muscle" Foreground="#6B7280"
-                                       FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
-                                    CornerRadius="6" Height="36" Margin="0,0,0,16">
+                            <TextBlock Text="Primary Muscle" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="36" Margin="0,0,0,16">
                                 <ComboBox x:Name="CustomPrimaryCombo" Background="Transparent"
-                                          Foreground="#111827" BorderThickness="0" FontSize="13"
+                                          Foreground="{DynamicResource TextPrimary}" BorderThickness="0" FontSize="13"
                                           Padding="8,0" VerticalContentAlignment="Center" SelectedIndex="0">
                                     <ComboBoxItem Content="Chest"/>
                                     <ComboBoxItem Content="Back"/>
@@ -322,12 +315,10 @@
                                 </ComboBox>
                             </Border>
 
-                            <TextBlock Text="Secondary Muscles" Foreground="#6B7280"
-                                       FontSize="12" Margin="0,0,0,4"/>
-                            <Border Background="#F3F4F6" BorderBrush="#E5E7EB" BorderThickness="1"
-                                    CornerRadius="6" Height="108" Margin="0,0,0,16">
+                            <TextBlock Text="Secondary Muscles" Foreground="{DynamicResource TextSecondary}" FontSize="12" Margin="0,0,0,4"/>
+                            <Border Background="{DynamicResource InputBg}" BorderBrush="{DynamicResource BorderSoft}" BorderThickness="1" CornerRadius="6" Height="108" Margin="0,0,0,16">
                                 <ListBox x:Name="CustomSecondaryList" Background="Transparent"
-                                         Foreground="#111827" BorderThickness="0"
+                                         Foreground="{DynamicResource TextPrimary}" BorderThickness="0"
                                          SelectionMode="Multiple">
                                     <ListBoxItem Content="Chest"/>
                                     <ListBoxItem Content="Back"/>
@@ -343,9 +334,9 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
                         <TextBlock x:Name="CustomFormErrorText" Foreground="#EF4444"
                                    VerticalAlignment="Center" Margin="0,0,16,0" FontSize="12"/>
-                        <Button Content="Cancel" Background="Transparent" Foreground="#6B7280"
+                        <Button Content="Cancel" Background="Transparent" Foreground="{DynamicResource TextSecondary}"
                                 FontWeight="SemiBold" FontSize="14" Padding="16,8"
-                                BorderThickness="1" BorderBrush="#E5E7EB" Cursor="Hand"
+                                BorderThickness="1" BorderBrush="{DynamicResource BorderSoft}" Cursor="Hand"
                                 Margin="0,0,8,0" Click="CancelCustom_Click"/>
                         <Button Content="Save Exercise" Background="#6D4AFF" Foreground="White"
                                 FontWeight="SemiBold" FontSize="14" Padding="16,8"

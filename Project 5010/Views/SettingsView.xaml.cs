@@ -1,4 +1,9 @@
-﻿using Project_5010.Services;
+﻿// SettingsView.cs
+// Lets the user edit their profile (name, height, weight, age, sex),
+// choose their activity level, fitness goal, training split, and theme.
+// Changes are saved to settings.json and applied across the app.
+
+using Project_5010.Services;
 using Project_5010.Models;
 using System;
 using System.Globalization;
@@ -50,10 +55,14 @@ namespace Project_5010.Views
             };
             GoalTypeCombo.SelectedIndex = _settings.GoalType switch
             {
-                "Lose Weight" => 0,
-                "Gain Weight" => 2,
-                _             => 1
+                "Lose Weight"     => 0,
+                "Gain Weight"     => 2,
+                "Improve Fitness" => 3,
+                _                 => 1
             };
+
+            // Theme toggle
+            DarkModeToggle.IsChecked = _settings.ThemePreference == "Dark";
 
             switch (NormalizeSplitId(_settings.SplitPlanId))
             {
@@ -100,6 +109,7 @@ namespace Project_5010.Views
             _settings.ActivityLevel = ((ComboBoxItem)ActivityLevelCombo.SelectedItem)?.Content?.ToString() ?? "Moderate";
             _settings.GoalType = ((ComboBoxItem)GoalTypeCombo.SelectedItem)?.Content?.ToString() ?? "Maintain";
             _settings.SplitPlanId = GetSelectedSplitId();
+            _settings.ThemePreference = DarkModeToggle.IsChecked == true ? "Dark" : "Light";
 
             _settingsService.Save(_settings, _username);
 

@@ -1,4 +1,9 @@
-﻿using System;
+﻿// ExerciseFileService.cs
+// Manages the exercise library. On first run, it seeds 150+ exercises
+// covering Push, Pull, Legs, and Cardio categories.
+// Exercises are saved to exercises_v3.json.
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;

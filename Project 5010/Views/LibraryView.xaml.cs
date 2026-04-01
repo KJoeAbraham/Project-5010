@@ -1,3 +1,7 @@
+// LibraryView.cs
+// Displays the exercise library with 150+ exercises organized by training split.
+// Users can search, add custom exercises, and log personal records (PRs).
+
 using Project_5010.Models;
 using Project_5010.Services;
 using System;
@@ -13,9 +17,9 @@ namespace Project_5010.Views
 {
     public partial class LibraryView : UserControl
     {
-        private readonly ExerciseFileService exerciseService = new();
-        private readonly PRFileService prService = new();
-        private readonly SettingsFileService settingsService = new();
+        private ExerciseFileService exerciseService = new();
+        private PRFileService prService = new();
+        private SettingsFileService settingsService = new();
 
         private readonly ObservableCollection<Exercise> exercises;
         private readonly ObservableCollection<PersonalRecord> prs;
@@ -114,6 +118,7 @@ namespace Project_5010.Views
                 DetailPrimaryText.Text = "Primary: " + ex.Muscle;
                 DetailSecondaryText.Text = "Secondary: " + (string.IsNullOrWhiteSpace(ex.SubMuscle) ? "—" : ex.SubMuscle);
                 ApplyPrFilter();
+                RefreshBestLifts(ex.Name);
             }
             else
             {
@@ -123,7 +128,28 @@ namespace Project_5010.Views
                 DetailPrimaryText.Text = "Primary: —";
                 DetailSecondaryText.Text = "Secondary: —";
                 ApplyPrFilter();
+                BestLiftsContent.Text = "Select an exercise to see your best lifts.";
             }
+        }
+
+        // Shows the top 3 most recent PRs for the selected exercise
+        private void RefreshBestLifts(string exerciseName)
+        {
+            var bestPrs = prs
+                .Where(p => string.Equals(p.ExerciseName, exerciseName, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(p => p.Date)
+                .Take(3)
+                .ToList();
+
+            if (bestPrs.Count == 0)
+            {
+                BestLiftsContent.Text = "No PRs logged yet — select this exercise and log one!";
+                return;
+            }
+
+            string lines = string.Join("\n", bestPrs.Select(p =>
+                $"{p.Date:MMM d, yyyy}  —  {p.Weight} x {p.Reps} reps"));
+            BestLiftsContent.Text = lines;
         }
 
         // ========== PR LIST & EDITOR ==========

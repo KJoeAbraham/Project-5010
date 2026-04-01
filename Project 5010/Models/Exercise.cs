@@ -1,4 +1,8 @@
-﻿namespace Project_5010.Models
+﻿// Exercise.cs
+// Represents one exercise in the library (e.g. "Barbell Bench Press").
+// Includes the category (Push/Pull/Legs/Cardio), equipment, and muscles worked.
+
+namespace Project_5010.Models
 {
     public class Exercise
     {

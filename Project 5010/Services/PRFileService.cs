@@ -1,3 +1,7 @@
+// PRFileService.cs
+// Handles saving and loading personal records (PRs) to/from prs.json.
+// PRs track the user's best lifts for each exercise.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
